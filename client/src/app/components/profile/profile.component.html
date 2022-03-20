@@ -1,0 +1,58 @@
+<div *ngIf="isChangingProfile">
+  <div class="form-container mat-elevation-z5 text-center" *ngIf="user$ | async as user">
+    <h1>User Profile</h1>
+    <div class="profile-image">
+      <img width="120" height="120" [src]="user.photoURL ?? 'assets/images/image-placeholder.png'" />
+      <button mat-mini-fab (click)="inputField.click()" color="primary">
+        <mat-icon>edit</mat-icon>
+      </button>
+    </div>
+    <input #inputField type="file" hidden (change)="uploadImage($event, user)">
+
+    <form class="margin-top" [formGroup]="profileForm" (ngSubmit)="updateDisplayName(user)">
+      <div class="row">
+        <mat-form-field>
+          <input type="text" matInput formControlName="displayName" placeholder="Display Name" />
+        </mat-form-field>
+      </div>
+
+      <button type="submit" class="margin-top" mat-raised-button color="primary">
+        Save
+      </button>
+    </form>
+  </div>
+</div>
+
+<div *ngIf="user$ | async as user">
+  <div *ngIf="!isChangingProfile">
+    <div class="form-container profile-details mat-elevation-z5">
+      <div class="profile-details-data">
+        
+        <div class="profile-picture">
+          <img width="200" height="200" [src]="user.photoURL ?? 'assets/images/image-placeholder.png'" />
+        </div>
+
+        <div class="proflie-details-infos">
+          <h1 class="text-center"><b>{{ user.displayName }}</b></h1>
+          <p>Username: <b>{{ user.username}}</b></p>
+          <p>Born on: <b>{{ user.birthdate }}</b></p>
+          <button *ngIf="!isOwnProfile" mat-raised-button color="primary" (click)="follow()" class="follow-button">
+            {{ followButtonText }}
+          </button>
+        </div>
+      </div>
+
+      <div class="profile-details-stats">
+        <p>Has <b>{{ user.followers!.length }}</b> followers</p>
+        <p>Follows <b>{{ user.followedUsers!.length }}</b> users</p>
+        <p>Has <b>{{ user.posts!.length }}</b> posts </p>
+      </div>
+
+      <button *ngIf="isOwnProfile" mat-mini-fab (click)="setisChangingProfile()" class="edit-button" color="primary">
+        <mat-icon>edit</mat-icon>
+      </button>
+
+    </div>
+    <app-post [type]="'ownPosts'" [user]="(user$)"> </app-post>
+  </div>
+</div>

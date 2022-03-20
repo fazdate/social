@@ -1,0 +1,36 @@
+.card {
+    max-width: 600px;
+    margin: auto;
+    margin-top: 2%;
+    margin-bottom: 2%;
+}
+
+.profile-picture {
+    border-radius: 100%;
+    padding: auto;
+}
+
+.mat-header {
+    padding-bottom: 2%;
+}
+
+.mat-buttons {
+    justify-content: space-between;
+    display: flex;
+    flex-direction: row;
+}
+
+.custom-btn {
+    margin: 0px 8px !important;
+}
+
+.subtitle-right {
+    display: inline;
+    float: right;
+}
+
+.subtitle-left {
+    display: inline;
+}
+
+

@@ -1,16 +1,16 @@
 package com.fazdate.social.services.firebaseServices;
 
-import com.fazdate.social.helpers.Names;
 import com.fazdate.social.models.User;
 import com.google.firebase.auth.*;
+import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 @Service
+@RequiredArgsConstructor
 public class AuthService {
-    private final FirebaseAuth firebaseAuth = FirebaseAuth.getInstance(ServiceLocator.getFirebaseApp());
-    private final FirestoreService firestoreService = new FirestoreService();
+    private final FirebaseAuth firebaseAuth = FirebaseAuth.getInstance();
     private final Logger LOGGER = LoggerFactory.getLogger(AuthService.class);
 
     public UserRecord getUserDataByUID(String uid) throws FirebaseAuthException {
@@ -21,12 +21,12 @@ public class AuthService {
         return firebaseAuth.listUsers(null);
     }
 
-    public void createUser(User user) throws FirebaseAuthException {
+    public void createUser(User user, String password) throws FirebaseAuthException {
         UserRecord.CreateRequest request = new UserRecord.CreateRequest()
-                .setUid(user.getUserId())
+                .setUid(user.getUsername())
                 .setEmail(user.getEmail())
                 .setEmailVerified(true)
-                .setPassword("123456")
+                .setPassword(password)
                 .setDisplayName(user.getDisplayName());
         firebaseAuth.createUser(request);
     }
@@ -35,12 +35,11 @@ public class AuthService {
         firebaseAuth.deleteUser(userId);
     }
 
-    public void deleteEveryUserAndTheirData(Names name) {
+    public void deleteEveryUser() {
         try {
             ListUsersPage listUsersPage = getEveryUser();
             while (listUsersPage != null) {
                 for (ExportedUserRecord user : listUsersPage.getValues()) {
-                    firestoreService.deleteDocumentFromCollection(name, user.getUid());
                     deleteUser(user.getUid());
                     LOGGER.info("User with userId " + user.getUid() + " was deleted!");
                 }

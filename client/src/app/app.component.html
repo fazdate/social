@@ -1,0 +1,38 @@
+<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet" />
+
+<mat-toolbar color="primary">
+  <span [style.cursor]="'pointer'" routerLink="/home">
+    Social!
+  </span>
+  <ng-container *ngIf="user$ | async as user; else loginButton">
+    <mat-form-field>
+      <input type="text" placeholder="Search" matInput [formControl]="search" (keyup.enter)="redirectToUser()" [matAutocomplete]="auto" >
+         <mat-autocomplete #auto="matAutocomplete">
+           <mat-option *ngFor="let option of options" [value]="option">
+             {{option}}
+          </mat-option>
+      </mat-autocomplete>
+   </mat-form-field>
+    <button mat-button [matMenuTriggerFor]="userMenu">
+      <img class="profile-image-toolbar" width="30" height="30"
+        [src]="user.photoURL ?? 'assets/images/image-placeholder.png'" />
+      {{user.displayName}}
+      <mat-icon>expand_more</mat-icon>
+    </button>
+  </ng-container>
+  <ng-template #loginButton>
+    <button mat-button routerLink="login">
+      <mat-icon>login</mat-icon>
+      Login
+    </button>
+  </ng-template>
+</mat-toolbar>
+
+<div>
+  <router-outlet></router-outlet>
+</div>
+
+<mat-menu #userMenu="matMenu">
+  <button mat-menu-item (click)="logout()">Logout</button>
+  <button mat-menu-item [routerLink]="profileLink">Profile</button>
+</mat-menu>

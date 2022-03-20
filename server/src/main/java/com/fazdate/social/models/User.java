@@ -2,17 +2,17 @@ package com.fazdate.social.models;
 
 import lombok.*;
 
-import java.util.List;
+import java.util.ArrayList;
 
-@Setter
-@Getter
+@Data
 @NoArgsConstructor
 public class User {
-    private String userId;
+    private String username;
     private String displayName;
     private String email;
     private String birthdate;
-    private List<Messages> messages;
-    private List<Post> posts;
-    private List<String> friends;
+    private String photoURL;
+    private ArrayList<String> posts;
+    private ArrayList<String> followers;
+    private ArrayList<String> followedUsers;
 }

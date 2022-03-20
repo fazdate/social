@@ -1,33 +1,41 @@
 package com.fazdate.social.generators;
 
 import com.fazdate.social.helpers.Names;
-import com.fazdate.social.models.Message;
-import com.fazdate.social.models.Messages;
+import com.fazdate.social.models.Comment;
 import com.fazdate.social.models.Post;
 import com.fazdate.social.models.User;
 import com.fazdate.social.services.firebaseServices.AuthService;
 import com.fazdate.social.services.firebaseServices.FirestoreService;
-import com.fazdate.social.services.firebaseServices.ServiceLocator;
-import com.google.firebase.auth.ExportedUserRecord;
+import com.fazdate.social.services.modelServices.PostService;
+import com.fazdate.social.services.modelServices.UserService;
 import com.google.firebase.auth.FirebaseAuthException;
-import com.google.firebase.auth.ListUsersPage;
 import com.thedeanda.lorem.Lorem;
 import com.thedeanda.lorem.LoremIpsum;
+import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Component;
 
+import java.io.IOException;
 import java.text.Normalizer;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 import java.util.concurrent.ExecutionException;
 
+@RequiredArgsConstructor
+@Component
 public class UserGenerator {
-    private static final AuthService authService = ServiceLocator.getAuthService();
-    private static final FirestoreService firestoreService = ServiceLocator.getFirestoreService();
-    final static Logger LOGGER = LoggerFactory.getLogger(UserGenerator.class);
+    private final AuthService authService;
+    private final FirestoreService firestoreService;
+    private final PostService postService;
+    private final UserService userService;
+    private final CommonDataGenerator commonDataGenerator;
+    private final PostGenerator postGenerator;
+    private final CommentGenerator commentGenerator;
+    private final static Logger LOGGER = LoggerFactory.getLogger(UserGenerator.class);
 
-    public static void generateNRandomUser(int n) throws FirebaseAuthException, ExecutionException, InterruptedException {
+    public void generateNRandomUser(int n) throws FirebaseAuthException, ExecutionException, InterruptedException, IOException {
         List<User> users = new ArrayList<>();
         for (int i = 0; i < n; i++) {
             users.add(generateUser());
@@ -35,34 +43,36 @@ public class UserGenerator {
         updateUsers(users);
     }
 
-    private static User generateUser() throws FirebaseAuthException, ExecutionException, InterruptedException {
+    private User generateUser() throws FirebaseAuthException, ExecutionException, InterruptedException, IOException {
         String name = generateName();
         String username = generateUserName(name);
         String email = generateEmail(username);
-        List<String> friends = generateFriends(username);
+        ArrayList<String> followers = generateFollowers(username);
         String birthdate = generateBirthdate();
+        String photoUrl = generatePhotoUrl();
 
         User user = new User();
-        user.setUserId(username);
+        user.setUsername(username);
         user.setEmail(email);
         user.setBirthdate(birthdate);
         user.setDisplayName(name);
-        user.setFriends(friends);
+        user.setFollowers(followers);
+        user.setFollowedUsers(new ArrayList<>());
+        user.setPhotoURL(photoUrl);
 
-        createUser(user);
-        generateMessages(user, friends);
+        userService.createUser(user, "123456");
         generatePosts(user);
         updateUser(user);
 
         return user;
     }
 
-    private static String generateName() {
+    private String generateName() {
         Lorem lorem = LoremIpsum.getInstance();
         return lorem.getName();
     }
 
-    private static String generateUserName(String name) {
+    private String generateUserName(String name) {
         // Making the name lowercase, and then removing tha accents from it.
         name = name.toLowerCase(Locale.ROOT);
         name = Normalizer.normalize(name, Normalizer.Form.NFD).replaceAll("[^\\p{ASCII}]", "");
@@ -85,12 +95,12 @@ public class UserGenerator {
         }
     }
 
-    private static String generateEmail(String username) {
+    private String generateEmail(String username) {
         String withoutAtSymbol = username.substring(1);
         return withoutAtSymbol + "@social.com";
     }
 
-    private static String generateBirthdate() {
+    private String generateBirthdate() {
         String[] date = new String[3];
 
         date[0] = generateBirthYear();
@@ -105,17 +115,17 @@ public class UserGenerator {
         return sb.toString();
     }
 
-    private static String generateBirthYear() {
+    private String generateBirthYear() {
         // This will generate users that are between the ages of 19 and 99
         return String.valueOf((int) (Math.random() * (1922 - 2003)) + 2003);
     }
 
-    private static String generateBirthMonth() {
+    private String generateBirthMonth() {
         int month = (int) (Math.random() * (12 - 1)) + 1;
         return (month < 10) ? "0" + month : String.valueOf(month);
     }
 
-    private static String generateBirthDay(String month) {
+    private String generateBirthDay(String month) {
         int day;
         int intMonth = Integer.parseInt(month);
         if (intMonth == 2) {
@@ -128,133 +138,140 @@ public class UserGenerator {
         return (day < 10) ? "0" + day : String.valueOf(day);
     }
 
-    private static List<String> generateFriends(String username) throws FirebaseAuthException {
-        List<String> userIds = getEveryUserId();
-        return generateRandomFriends(userIds, username);
+    private String generatePhotoUrl() throws IOException {
+        return commonDataGenerator.generatePhotoUrl("src/main/resources/profileImages.txt");
     }
 
-    private static List<String> getEveryUserId() throws FirebaseAuthException {
-        ListUsersPage listUsersPage = authService.getEveryUser();
-        List<String> userIds = new ArrayList<>();
-        for (ExportedUserRecord user : listUsersPage.getValues()) {
-            userIds.add(user.getUid());
-        }
-        return userIds;
+    private ArrayList<String> generateFollowers(String username) throws FirebaseAuthException {
+        return generateRandomFollowers(username);
     }
 
-    private static List<String> generateRandomFriends(List<String> userIds, String username) {
-        int numberOfFriends = generateNumberOfFriends(userIds);
-        List<String> friends = new ArrayList<>();
-        while (numberOfFriends != 0) {
+    private ArrayList<String> generateRandomFollowers(String username) throws FirebaseAuthException {
+        ArrayList<String> userIds = userService.getEveryUsername();
+        int numberOfFollowers = generateNumberOfFollowers(userIds);
+        ArrayList<String> followers = new ArrayList<>();
+        while (numberOfFollowers != 0) {
             int randomNumber = (int) ((Math.random() * (userIds.size() - 1)) + 1);
-            String potentialFriend = userIds.get(randomNumber);
-            // A user cannot be their own friend
-            if (potentialFriend.equals(username)) {
-                potentialFriend = userIds.get(0);
+            String potentialFollower = userIds.get(randomNumber);
+            // A user cannot follow themselves
+            if (potentialFollower.equals(username)) {
+                potentialFollower = userIds.get(0);
             }
-            friends.add(potentialFriend);
-            userIds.remove(potentialFriend);
-            numberOfFriends--;
+            followers.add(potentialFollower);
+            userIds.remove(potentialFollower);
+            numberOfFollowers--;
         }
-        return friends;
+        return followers;
     }
 
-    private static int generateNumberOfFriends(List<String> userIds) {
+    private int generateNumberOfFollowers(List<String> userIds) {
         int min = 0;
         int max = userIds.size();
         return (int) (Math.random() * (max - min)) + min;
     }
 
-    private static void createUser(User user) throws FirebaseAuthException {
-        authService.createUser(user);
-        LOGGER.info("User with userId: " + user.getUserId() + " has been created!");
-        firestoreService.addDocumentToCollection(Names.USERS, user, user.getUserId());
-        LOGGER.info("User with userId: " + user.getUserId() + " has been added to the database!");
-    }
-
-    private static void generateMessages(User user, List<String> friends) throws ExecutionException, InterruptedException {
-        List<Messages> messages = new ArrayList<>();
-        for (String userId : friends) {
-            User friend = firestoreService.getObjectFromDocument(Names.USERS, User.class, userId);
-            if (!firestoreService.checkIfMessagesHasTheseUsers(user, friend)) {
-                messages.add(MessagesGenerator.generateMessages(user, friend));
-            }
-        }
-        user.setMessages(messages);
-    }
-
-    private static void generatePosts(User user) throws ExecutionException, InterruptedException {
+    private void generatePosts(User user) throws ExecutionException, InterruptedException, IOException {
         int numberOfPosts = (int) ((Math.random() * (10 - 1)) + 1);
-        List<Post> posts = new ArrayList<>();
+        ArrayList<String> posts = new ArrayList<>();
         for (int i = 0; i < numberOfPosts; i++) {
-            posts.add(PostGenerator.generatePost(user));
+            Post post = postGenerator.generatePost(user.getUsername());
+            firestoreService.addDocumentToCollection(Names.POSTS, post, post.getPostId());
+            posts.add(post.getPostId());
         }
         user.setPosts(posts);
     }
 
-    private static void updateUsers(List<User> users) {
-        updateMessages(users);
-        updateFriends(users);
-        updateNumberOfLikesOnPost(users);
+    private void updateUsers(List<User> users) throws ExecutionException, InterruptedException {
+        updateFollowers(users);
+        updatePosts(users);
         for (User user : users) {
             updateUser(user);
         }
     }
 
-    // TODO: Sometimes this updates the messages twice, look at @Burt_calderon
-    private static void updateMessages(List<User> users) {
+    private void updateFollowers(List<User> users) {
         for (int i = users.size(); i != 0; i--) {
             User user1 = users.get(i - 1);
-            List<Messages> user1Messages = user1.getMessages();
-            for (Messages messages : user1Messages) {
-                User user2 = users.get(getIndexOfUserInList(users, messages.getUser2Id()));
-                messages.setUser2Id(user1.getUserId());
-                messages.setUser1Id(user2.getUserId());
-                user2.getMessages().add(messages);
-                LOGGER.info("User with userId " + user2.getUserId() + " had their messages updated");
-            }
-        }
-    }
-
-
-    private static void updateFriends(List<User> users) {
-        for (int i = users.size(); i != 0; i--) {
-            User user1 = users.get(i - 1);
-            List<String> user1Friends = user1.getFriends();
-            for (String friend : user1Friends) {
-                User user2 = users.get(getIndexOfUserInList(users, friend));
-                List<String> friends = user2.getFriends();
-                if (!friends.contains(user1.getUserId())) {
-                    user2.getFriends().add(user1.getUserId());
+            for (String follower : user1.getFollowers()) {
+                User user2 = users.get(getIndexOfUserInList(users, follower));
+                List<String> user2FollowedUsers = user2.getFollowedUsers();
+                if (!user2FollowedUsers.contains(user1.getUsername())) {
+                    user2.getFollowedUsers().add(user1.getUsername());
                 }
-                LOGGER.info("User with userId " + friend + " had their friends updated");
+                LOGGER.info("User with userId " + follower + " had their followers updated");
             }
         }
     }
 
-    private static void updateNumberOfLikesOnPost(List<User> users) {
+    private void updatePosts(List<User> users) throws ExecutionException, InterruptedException {
+        updateNumberOfLikesOnPost(users);
+        addCommentsToPosts(users);
+    }
+
+    private void updateNumberOfLikesOnPost(List<User> users) throws ExecutionException, InterruptedException {
         for (User user : users) {
-            for (Post post : user.getPosts()) {
-                post.setNumberOfLikes(generateNumberOfLikes(user));
-                LOGGER.info("Post with the id " + post.getPostId() + " had the number of likes updated!");
+            for (String postId : user.getPosts()) {
+                Post post = postService.getPost(postId);
+                post.setUsersThatLiked(generateUsersThatLike(user));
+                updatePost(post);
             }
         }
     }
 
-    // Maximum number is the number of the user's friend. The minimum number is 1.
-    // If the user only has 1 or 0 friends, then the number of friends will be returned.
-    private static int generateNumberOfLikes(User user){
-        int numberOfFriends = user.getFriends().size();
-        return numberOfFriends > 1 ? (int) ((Math.random() * (numberOfFriends - 1)) + 1) : numberOfFriends;
+    private void addCommentsToPosts(List<User> users) throws ExecutionException, InterruptedException {
+        for (User user : users) {
+            for (String postId : user.getPosts()) {
+                Post post = postService.getPost(postId);
+                int numberOfComments = generateNumberOfLikesAndComments(user);
+                ArrayList<String> followers = user.getFollowers();
+                while (numberOfComments != 0) {
+                    int randomFollowerIdIndex = (int) (Math.random() * followers.size());
+                    Comment comment = commentGenerator.generateComment(followers.get(randomFollowerIdIndex), postId);
+                    firestoreService.addDocumentToCollection(Names.COMMENTS, comment, comment.getCommentId());
+                    post.getCommentIds().add(comment.getCommentId());
+                    followers.remove(randomFollowerIdIndex);
+                    numberOfComments--;
+                }
+                updatePost(post);
+            }
+        }
     }
 
-    private static void updateUser(User user) {
-        firestoreService.updateDocumentInCollection(Names.USERS, user, user.getUserId());
+
+    private ArrayList<String> generateUsersThatLike(User user) {
+        int numberOfUsersThatLike = generateNumberOfLikesAndComments(user);
+        ArrayList<String> followers = new ArrayList<>(user.getFollowers());
+        ArrayList<String> usersThatLike = new ArrayList<>();
+        while (numberOfUsersThatLike != 0) {
+            int index = 0;
+            if (numberOfUsersThatLike != 1 || followers.size() != 1) {
+                index = (int) ((Math.random() * (followers.size() - 1)) + 1);
+            }
+            usersThatLike.add(followers.get(index));
+            followers.remove(index);
+            numberOfUsersThatLike--;
+        }
+
+        return usersThatLike;
     }
 
-    private static int getIndexOfUserInList(List<User> users, String userId) {
+
+    private int generateNumberOfLikesAndComments(User user) {
+        int numberOfFollowers = user.getFollowers().size();
+        return numberOfFollowers > 1 ? (int) ((Math.random() * (numberOfFollowers - 1)) + 1) : 0;
+    }
+
+    private void updateUser(User user) throws ExecutionException, InterruptedException {
+        userService.updateUser(user);
+    }
+
+    private void updatePost(Post post) throws ExecutionException, InterruptedException {
+        postService.updatePost(post);
+    }
+
+    private int getIndexOfUserInList(List<User> users, String userId) {
         for (int i = 0; i < users.size(); i++) {
-            if (users.get(i).getUserId().equals(userId)) {
+            if (users.get(i).getUsername().equals(userId)) {
                 return i;
             }
         }

@@ -2,13 +2,10 @@ package com.fazdate.social.services.firebaseServices;
 
 import com.fazdate.social.helpers.CollectionNames;
 import com.fazdate.social.helpers.Names;
-import com.fazdate.social.models.User;
 import com.google.api.core.ApiFuture;
 import com.google.cloud.firestore.*;
-import com.google.firebase.auth.ExportedUserRecord;
-import com.google.firebase.auth.FirebaseAuthException;
-import com.google.firebase.auth.ListUsersPage;
 import com.google.firebase.cloud.FirestoreClient;
+import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -18,9 +15,9 @@ import java.util.Objects;
 import java.util.concurrent.ExecutionException;
 
 @Service
+@RequiredArgsConstructor
 public class FirestoreService {
     private final Firestore firestore = FirestoreClient.getFirestore();
-    private final AuthService authService = ServiceLocator.getAuthService();
     private final Logger LOGGER = LoggerFactory.getLogger(FirestoreService.class);
 
     public <T> void addDocumentToCollection(Names name, T data, String documentId) {
@@ -38,15 +35,11 @@ public class FirestoreService {
     }
 
     public <T> void updateDocumentInCollection(Names name, T data, String documentId) {
-        getCollection(name).document(documentId).set(data);
+        getCollection(name).document(documentId).set(data, SetOptions.merge());
     }
 
     public void deleteDocumentFromCollection(Names name, String documentId) {
         getCollection(name).document(documentId).delete();
-    }
-
-    public <T> void addToArrayInDocument(Names name, String documentId, T newData) {
-        getCollection(name).document(documentId).set(newData, SetOptions.merge());
     }
 
     public List<QueryDocumentSnapshot> getEveryDocumentFromCollection(Names name) throws ExecutionException, InterruptedException {
@@ -64,32 +57,6 @@ public class FirestoreService {
             }
         }
         return false;
-    }
-
-    // Returns true if the messages are between user1 and user2
-    public boolean checkIfMessagesHasTheseUsers(User user1, User user2) throws ExecutionException, InterruptedException {
-        List<QueryDocumentSnapshot> allDocument = getEveryDocumentFromCollection(Names.USERS);
-        for (DocumentSnapshot document : allDocument) {
-            if (isBetweenTheseUsers(user1, user2, document)) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    private boolean isBetweenTheseUsers(User user1, User user2, DocumentSnapshot document) {
-        return (Objects.equals(document.get("user1Id"), user1.getUserId()) && Objects.equals(document.get("user2Id"), user2.getUserId())) ||
-                (Objects.equals(document.get("user1Id"), user2.getUserId()) && Objects.equals(document.get("user2Id"), user1.getUserId()));
-    }
-
-    public DocumentSnapshot getDocument(Names name, String documentId) throws ExecutionException, InterruptedException {
-        DocumentReference docRef = getCollection(name).document(documentId);
-        ApiFuture<DocumentSnapshot> future = docRef.get();
-        DocumentSnapshot document = future.get();
-        if (document.exists()) {
-            return document;
-        }
-        return null;
     }
 
     private CollectionReference getCollection(Names name) {
@@ -117,5 +84,13 @@ public class FirestoreService {
 
     public boolean doesUserExists(String userId) throws ExecutionException, InterruptedException {
         return checkIfDocumentExistsInCollection(Names.USERS, userId);
+    }
+
+    public boolean doesPostExists(String postId) throws ExecutionException, InterruptedException {
+        return checkIfDocumentExistsInCollection(Names.POSTS, postId);
+    }
+
+    public boolean doesCommentExists(String commentId) throws ExecutionException, InterruptedException {
+        return checkIfDocumentExistsInCollection(Names.COMMENTS, commentId);
     }
 }
