@@ -13,14 +13,23 @@ public class AuthService {
     private final FirebaseAuth firebaseAuth = FirebaseAuth.getInstance();
     private final Logger LOGGER = LoggerFactory.getLogger(AuthService.class);
 
+    /**
+     * Returns the UserRecord of user who's uid is the given one
+     */
     public UserRecord getUserDataByUID(String uid) throws FirebaseAuthException {
         return firebaseAuth.getUser(uid);
     }
 
+    /**
+     * Returns every registered user
+     */
     public ListUsersPage getEveryUser() throws FirebaseAuthException {
         return firebaseAuth.listUsers(null);
     }
 
+    /**
+     * Registers a new user with the given user and the given password
+     */
     public void createUser(User user, String password) throws FirebaseAuthException {
         UserRecord.CreateRequest request = new UserRecord.CreateRequest()
                 .setUid(user.getUsername())
@@ -31,10 +40,16 @@ public class AuthService {
         firebaseAuth.createUser(request);
     }
 
+    /**
+     * Deletes the given user
+     */
     public void deleteUser(String userId) throws FirebaseAuthException {
         firebaseAuth.deleteUser(userId);
     }
 
+    /**
+     * Deletes every user
+     */
     public void deleteEveryUser() {
         try {
             ListUsersPage listUsersPage = getEveryUser();

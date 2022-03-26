@@ -2,12 +2,15 @@
     <mat-card class="mat-elevation-z5">
         <mat-card-header class="mat-header">
             <div mat-card-avatar>
-                <img width="40" height="40" [src]=post.photoUrl class="profile-picture">
+                <img width="50" height="50" [src]="post.photoUrl" class="profile-picture">
             </div>
-            <mat-card-title>{{ post.displayName }}</mat-card-title>
-            <!-- Make one of these go to the right and the other to the left  -->
-            <mat-card-subtitle class="subtitle-left">{{ post.post?.posterUsername }}</mat-card-subtitle>
-            <mat-card-subtitle class="subtitle-right">{{ post.post?.timestamp }}</mat-card-subtitle>
+            <div class="align-left">
+                <mat-card-title>{{ post.displayName }}</mat-card-title>
+                <mat-card-subtitle>{{ post.post?.posterUsername }}</mat-card-subtitle>
+            </div>
+            <div class="align-right">
+                <mat-card-subtitle>{{ getDate(post.post?.timestamp!) }}</mat-card-subtitle>
+            </div>
         </mat-card-header>
         <div>
             <img mat-card-image [src]=post.post?.imgSrc>
@@ -17,10 +20,14 @@
         </mat-card-content>
         <span class="like-counter">
             <b>{{ post.post?.usersThatLiked?.length }} people have liked this</b>
+            <br>
+            <b>{{ post.comments?.length }} comments</b>
         </span>
         <mat-card-actions class="mat-buttons">
-            <button mat-button class="custom-btn" (click)="like()"><b>Like</b></button>
-            <button mat-button (click)="comment()"><b>Comment</b></button>
+            <button mat-button [ngClass]="isLiked(post) ? 'custom-btn liked' : 'custom-btn'"
+                (click)="likeOrUnlike(post.post?.postId!)"><b>Like</b></button>
+
+            <button mat-button (click)="redirectToPostPage(post.post?.postId!)"><b>Comment</b></button>
         </mat-card-actions>
     </mat-card>
 </div>

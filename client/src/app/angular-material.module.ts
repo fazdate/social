@@ -33,6 +33,7 @@ import { MatRadioModule } from '@angular/material/radio';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { NgMatSearchBarModule } from 'ng-mat-search-bar';
+import { MatNativeDateModule } from '@angular/material/core';
 
 const materialModules = [
   CdkTreeModule,
@@ -68,6 +69,7 @@ const materialModules = [
   MatDatepickerModule,
   MatTooltipModule,
   NgMatSearchBarModule,
+  MatNativeDateModule 
 ];
 @NgModule({
   imports: [
@@ -77,5 +79,6 @@ const materialModules = [
   exports: [
     ...materialModules
   ],
+  providers: [MatDatepickerModule]
 })
 export class AngularMaterialModule { }

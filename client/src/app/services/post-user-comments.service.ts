@@ -1,9 +1,9 @@
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { Post } from '../models/post';
-import { PostUserComments } from '../models/postAndUserAndComments';
-import { CommentService } from './comment.service';
-import { PostsService } from './posts.service';
-import { UsersService } from './users.service';
+import { HotToastService } from '@ngneat/hot-toast';
+import { of } from 'rxjs';
+import { urls } from 'src/environments/environment';
+import { PostUserComments } from '../models/post-user-comments';
 
 @Injectable({
   providedIn: 'root'
@@ -11,34 +11,45 @@ import { UsersService } from './users.service';
 export class PostUserCommentsService {
 
   constructor(
-    private postService: PostsService,
-    private usersService: UsersService,
-    private commentService: CommentService
+    private http: HttpClient,
   ) { }
 
-  async getOwnPosts(username: string) {
-    let ownPosts = await this.postService.getOwnPost(username)
-    return await this.getPostUserCommentsArray(ownPosts)
+  async getPostUserCommentsObs(postId: string) {
+    return of(await this.getPostUserComments(postId))
   }
 
-  async getOwnAndFollowedUsersPosts(username: string) {
-    let ownAndFollowedUsersPosts = await this.postService.getOwnAndFollowedUsersPosts(username)
-    return await this.getPostUserCommentsArray(ownAndFollowedUsersPosts)
+  async getOwnPostUserComments(username: string) {
+    return await this.getPostUserCommentsArray(username, urls.getOwnPostUserCommentsUrl)
   }
 
-  async getPostUserCommentsArray(posts: Post[]) {
-    let PostUserComments: PostUserComments[] = []
-    for (let i = 0; i < posts.length; i++) {
-      let userId = posts[i].posterUsername as string
-      let user = await this.usersService.getUser(userId)
-      let comments = await this.commentService.getEveryCommentOfPost(posts[i].postId as string)
-      PostUserComments.push( {
-        post: posts![i],
-        photoUrl: user.photoURL,
-        displayName: user.displayName,
-        comments: comments
-      }) 
+  async getFollowedUsersPostUserComments(username: string) {
+    return await this.getPostUserCommentsArray(username, urls.getFollowedUsersPostUserComments)
+  }
+
+  async getPostUserCommentsArray(username: string, url: string) {
+    const httpParams = new HttpParams().set("username", username!)
+    const result = await this.http.get<PostUserComments[]>(url, { 'params': httpParams }).toPromise()
+    let posts: PostUserComments[] = []
+    for (let i = 0; i < result!.length; i++) {
+      posts.push({
+        comments: result![i].comments,
+        photoUrl: result![i].photoUrl,
+        displayName: result![i].displayName,
+        post: result![i].post
+      })
     }
-    return PostUserComments
+    return posts;
   }
+
+  async getPostUserComments(postId: string) {
+    const httpParams = new HttpParams().set("postId", postId)
+    const result = await this.http.get<PostUserComments>(urls.getPostUserComment, { 'params': httpParams }).toPromise()
+    return {
+      comments: result?.comments,
+      photoUrl: result?.photoUrl,
+      displayName: result?.displayName,
+      post: result?.post
+    }
+  }
+
 }

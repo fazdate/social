@@ -17,3 +17,9 @@
 .form-container {
     margin-top: 20px;
 }
+
+.cancel-button {
+    position: fixed;
+    right: 1em;
+    top: 5em;
+}

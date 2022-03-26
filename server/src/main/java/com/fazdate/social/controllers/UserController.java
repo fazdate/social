@@ -30,11 +30,6 @@ public class UserController {
         userService.updateUser(user);
     }
 
-    @PutMapping("/deleteUser")
-    public void deleteUser(@RequestParam String username) throws FirebaseAuthException {
-        userService.deleteUser(username);
-    }
-
     @GetMapping("/getEveryUsername")
     public ArrayList<String> getEveryUsername() throws FirebaseAuthException {
         return userService.getEveryUsername();
@@ -48,6 +43,11 @@ public class UserController {
     @GetMapping("/doesUserFollowAnotherUser")
     public boolean doesUserFollowAnotherUser(@RequestParam String username, @RequestParam String anotherUsername) throws ExecutionException, InterruptedException {
         return userService.doesUserFollowAnotherUser(username, anotherUsername);
+    }
+
+    @GetMapping("/getDisplayNameFromUsername")
+    public String getDisplayNameFromUsername(String username) throws ExecutionException, InterruptedException {
+        return userService.getDisplayNameFromUsername(username);
     }
 
 }

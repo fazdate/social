@@ -85,7 +85,6 @@ export class ProfileComponent implements OnInit {
 
   follow() {
     this.usersService.followOrUnfollowUser(this.username!, this.curretUserName)
-    window.location.reload()
   }
 
   setisChangingProfile() {

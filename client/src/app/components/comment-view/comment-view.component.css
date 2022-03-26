@@ -1,0 +1,31 @@
+.card, .comment-writer {
+    max-width: 500px;
+    margin: auto;
+    margin-top: 2%;
+    margin-bottom: 2%;
+}
+
+.profile-picture {
+    border-radius: 100%;
+    padding: auto;
+}
+
+.align-right {
+    position: absolute;
+    right: 1em;
+    top: 40px;
+}
+
+.comment {
+    margin-bottom: 8px;
+}
+
+.comment-writer-content {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+}
+
+.comment-form-field {
+    width: 28em;
+}

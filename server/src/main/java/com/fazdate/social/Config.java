@@ -9,8 +9,14 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter
 @EnableWebMvc
 public class Config extends WebMvcConfigurerAdapter {
 
+    /**
+     * Adds CORS mapping to methods
+     */
     @Override
     public void addCorsMappings(CorsRegistry registry) {
-        registry.addMapping("/**");
+        registry.addMapping("/**")
+                .allowedMethods("GET", "POST", "PUT", "DELETE")
+                .allowedOrigins("*")
+                .allowedHeaders("*");
     }
 }

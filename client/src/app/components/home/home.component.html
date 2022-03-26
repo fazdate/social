@@ -5,23 +5,28 @@
     <app-post [type]="'ownAndFollowedUsersPosts'" [user]="user$"></app-post>
 </div>
 
-<div *ngIf="isCreatingPost" class="form-container mat-elevation-z5 text-center">
-    <h1>Create a post!</h1>
-    <form [formGroup]="postForm">
-        <mat-form-field>
-            <textarea matInput cdkTextareaAutosize #autosize="cdkTextareaAutosize" cdkAutosizeMinRows="1"
-                cdkAutosizeMaxRows="5" formControlName="text" placeholder="Text" class="post-text"></textarea>
-        </mat-form-field>
+<div *ngIf="isCreatingPost">
+    <button class="cancel-button" mat-fab color="primary" (click)="showHidePostCreater()">
+        <mat-icon>arrow_back</mat-icon>
+    </button>
+    <div class="form-container mat-elevation-z5 text-center">
+        <h1>Create a post!</h1>
+        <form [formGroup]="postForm">
+            <mat-form-field>
+                <textarea matInput cdkTextareaAutosize cdkAutosizeMinRows="1" cdkAutosizeMaxRows="5"
+                    formControlName="text" placeholder="Text" class="post-text"></textarea>
+            </mat-form-field>
 
+            <button mat-raised-button (click)="inputField.click()" color="primary">
+                Upload image
+            </button>
+            <input #inputField type="file" hidden (change)="uploadImage($event)">
+            <br>
 
-        <button mat-raised-button (click)="inputField.click()" color="primary">
-            Upload image
-        </button>
-        <input #inputField type="file" hidden (change)="uploadImage($event)">
-        <br>
-
-        <button mat-raised-button type="submit" class="margin-top" class="post-button" color="primary" (click)="createPost()">
-            Post
-        </button>
-    </form>
+            <button mat-raised-button type="submit" class="margin-top" class="post-button" color="primary"
+                (click)="createPost()">
+                Post
+            </button>
+        </form>
+    </div>
 </div>

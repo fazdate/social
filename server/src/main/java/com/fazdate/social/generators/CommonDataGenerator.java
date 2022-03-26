@@ -20,7 +20,10 @@ import java.util.concurrent.ExecutionException;
 public class CommonDataGenerator {
     private final FirestoreService firestoreService;
 
-    // This will generate an 11 character numeric id
+    /**
+     * Generates a random 11 long numeric ID in string.
+     * It will check the given collection to make sure the ID isn't already used.
+     */
     public String generateId(Names name) throws ExecutionException, InterruptedException {
         String chars = "0123456789";
         Random random = new Random();
@@ -37,6 +40,11 @@ public class CommonDataGenerator {
         return sb.toString();
     }
 
+    /**
+     * Returns with a random URL from the given text file
+     *
+     * @param fileName - Has to be given from the src folder
+     */
     public String generatePhotoUrl(String fileName) throws IOException {
         FileReader fileReader = new FileReader(fileName);
         BufferedReader bufferedReader = new BufferedReader(fileReader);
@@ -52,6 +60,12 @@ public class CommonDataGenerator {
         return images[random.nextInt(images.length)];
     }
 
+    /**
+     * Return with a String that contains a random number of words
+     *
+     * @param min - The minimum of the words
+     * @param max - The maximum of the words
+     */
     public String generateText(int min, int max) {
         Lorem lorem = LoremIpsum.getInstance();
         return lorem.getWords(min, max);

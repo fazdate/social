@@ -1,11 +1,12 @@
 package com.fazdate.social.models;
 
-import lombok.*;
+import lombok.Builder;
+import lombok.Data;
 
 import java.util.ArrayList;
 
 @Data
-@NoArgsConstructor
+@Builder
 public class User {
     private String username;
     private String displayName;
@@ -15,4 +16,5 @@ public class User {
     private ArrayList<String> posts;
     private ArrayList<String> followers;
     private ArrayList<String> followedUsers;
+    private ArrayList<String> messagesList;
 }

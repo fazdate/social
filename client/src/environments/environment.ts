@@ -15,6 +15,39 @@ export const environment = {
   production: false
 };
 
+export const api = 'http://localhost:8080/'
+
+export const urls = {
+  createUserurl: api + 'createUser',
+  addCommentUrl: api + 'addComment',
+  generateCommentIdUrl: api + 'generateCommentId',
+  getCommentUrl: api + 'getComment',
+  deleteCommentUrl: api + 'deleteComment',
+  getEveryCommentOfPostUrl: api + 'getEveryCommentOfPost',
+  getCommentWithUserData: api + 'getCommentWithUserData',
+  getMessageUrl: api + 'getMessage',
+  getMessagesListUrl: api + 'getMessagesListId',
+  getEveryMessageFromMessagesListUrl: api + 'getEveryMessageFromMessagesList',
+  sendMessageUrl: api + 'sendMessage',
+  generateMessageIdUrl: api + 'generateMessageId',
+  getMessagesListWIthUserDataUrl: api + 'getMessagesListWIthUserData',
+  getUsersEveryMessagesListWithUserDatUrl: api + 'getUsersEveryMessagesListWithUserData',
+  getPostUserCommentsArrayUrl: api + 'getPostUserCommentsArray',
+  getOwnPostUserCommentsUrl: api + 'getOwnPostUserComments',
+  getFollowedUsersPostUserComments: api + 'getFollowedUsersPostUserComments',
+  getPostUserComment: api + 'getPostUserComment',
+  createPostUrl: api + 'createPost',
+  generatePostId: api + 'generatePostId',
+  likeOrUnlikePostUrl: api + 'likeOrUnlikePost',
+  updateUserUrl: api + 'updateUser',
+  getUserUrl: api + 'getUser',
+  followOrUnfollowUserUrl: api + 'followOrUnfollowUser',
+  getEveryUsernameUrl: api + 'getEveryUsername',
+  getDisplayNameFromUsernameUrl: api + 'getDisplayNameFromUsername'
+}
+
+
+
 /*
  * For easier debugging in development mode, you can import the following file
  * to ignore zone related error stack frames such as `zone.run`, `zoneDelegate.invokeTask`.

@@ -24,7 +24,7 @@ public class CommentController {
     }
 
     @GetMapping("/getEveryCommentOfPost")
-    public ArrayList<Comment> getEveryCommentOfPost(@RequestParam String postId) throws ExecutionException, InterruptedException {
+    public Comment[] getEveryCommentOfPost(@RequestParam String postId) throws ExecutionException, InterruptedException {
         return service.getEveryCommentOfPost(postId);
     }
 
@@ -32,6 +32,11 @@ public class CommentController {
     @PutMapping("/deleteComment")
     public void addComment(@RequestParam String commentId) throws ExecutionException, InterruptedException {
         service.deleteComment(commentId);
+    }
+
+    @GetMapping("/generateCommentId")
+    public String generateCommentId() throws ExecutionException, InterruptedException {
+        return service.generateCommentId();
     }
 
 

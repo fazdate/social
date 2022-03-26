@@ -1,7 +1,7 @@
 <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet" />
 
 <mat-toolbar color="primary">
-  <span [style.cursor]="'pointer'" routerLink="/home">
+  <span [style.cursor]="'pointer'" routerLink="/">
     Social!
   </span>
   <ng-container *ngIf="user$ | async as user; else loginButton">
@@ -32,7 +32,8 @@
   <router-outlet></router-outlet>
 </div>
 
-<mat-menu #userMenu="matMenu">
-  <button mat-menu-item (click)="logout()">Logout</button>
+<mat-menu #userMenu="matMenu" class="menu">
   <button mat-menu-item [routerLink]="profileLink">Profile</button>
+  <button mat-menu-item (click)="redirectToMessagesList()">Messages</button>
+  <button mat-menu-item (click)="logout()">Logout</button>
 </mat-menu>

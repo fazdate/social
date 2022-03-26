@@ -44,5 +44,9 @@ export class AppComponent implements OnInit {
     this.router.navigate([link])
   }
 
+  redirectToMessagesList() {
+    this.router.navigate(["/messagesList"])
+  }
+
 
 }

@@ -1,8 +1,11 @@
 import { Component, Input, OnInit, SimpleChanges } from '@angular/core';
 import { PostUserCommentsService } from 'src/app/services/post-user-comments.service';
-import { PostUserComments } from 'src/app/models/postAndUserAndComments';
+import { PostUserComments } from 'src/app/models/post-user-comments';
 import { ProfileUser } from 'src/app/models/user-profile';
 import { Observable } from 'rxjs';
+import { Router } from '@angular/router';
+import { DatePipe } from '@angular/common';
+import { PostsService } from 'src/app/services/posts.service';
 
 @Component({
   selector: 'app-post',
@@ -17,36 +20,67 @@ export class PostComponent implements OnInit {
   @Input()
   user!: Observable<ProfileUser> | null
 
+  @Input()
+  post!: Observable<PostUserComments>
+
+  username = ""
+  posts: PostUserComments[] = [];
+
   constructor(
-    private postUserCommentsService: PostUserCommentsService
-  ) {}
+    private postUserCommentsService: PostUserCommentsService,
+    private router: Router,
+    private datePipe: DatePipe,
+    private postService: PostsService
+  ) { }
 
   ngOnInit(): void {
-    
-  }
-
-  posts: PostUserComments[] = [];
-  ngOnChanges(changes: SimpleChanges): void {
-    if (changes['user']) {
-      this.user!.subscribe(result => {
-        switch (this.type) {
-          case "ownAndFollowedUsersPosts":
-            this.postUserCommentsService.getOwnAndFollowedUsersPosts(result.username!).then(result => this.posts = result)
-            break
-          case "ownPosts":
-            this.postUserCommentsService.getOwnPosts(result.username!).then(result => this.posts = result)
-            break;
-        }
+    if (this.type === "single") {
+      this.user?.subscribe(result => {
+        this.username = result.username!
       })
     }
   }
 
-  like() {
+  ngOnChanges(changes: SimpleChanges): void {
+    if (changes['user']) {
+      this.user!.subscribe(result => {
+        this.username = result.username!
+        switch (this.type) {
+          case "ownAndFollowedUsersPosts":
+            this.postUserCommentsService.getFollowedUsersPostUserComments(result.username!).then(result => this.posts = result)
+            break
+          case "ownPosts":
+            this.postUserCommentsService.getOwnPostUserComments(result.username!).then(result => this.posts = result)
+            break;
+        }
+      })
+    }
 
+    if (changes['post']) {
+      this.post.subscribe(result => {
+        this.posts[0] = result
+      })
+    }
   }
 
-  comment() {
+  likeOrUnlike(postId: string) {
+    this.postService.likeOrUnlikePost(postId!, this.username)
+  }
 
+  isLiked(post: PostUserComments): boolean {
+    if (post.post?.usersThatLiked?.includes(this.username)) {
+      return true
+    }
+    return false
+  }
+
+  redirectToPostPage(postId: string) {
+    let link = "/post/" + postId
+    this.router.navigate([link])
+  }
+
+  getDate(date: Date) {
+    return this.datePipe.transform(date, 'MMMM dd, HH:ss');
   }
 
 }

@@ -1,19 +1,12 @@
 package com.fazdate.social.generators;
 
-import com.fazdate.social.helpers.Names;
-import com.fazdate.social.models.Comment;
-import com.fazdate.social.models.Post;
-import com.fazdate.social.models.User;
+import com.fazdate.social.models.*;
 import com.fazdate.social.services.firebaseServices.AuthService;
-import com.fazdate.social.services.firebaseServices.FirestoreService;
-import com.fazdate.social.services.modelServices.PostService;
 import com.fazdate.social.services.modelServices.UserService;
 import com.google.firebase.auth.FirebaseAuthException;
 import com.thedeanda.lorem.Lorem;
 import com.thedeanda.lorem.LoremIpsum;
 import lombok.RequiredArgsConstructor;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
@@ -21,49 +14,42 @@ import java.text.Normalizer;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
-import java.util.concurrent.ExecutionException;
 
 @RequiredArgsConstructor
 @Component
 public class UserGenerator {
     private final AuthService authService;
-    private final FirestoreService firestoreService;
-    private final PostService postService;
     private final UserService userService;
-    private final CommonDataGenerator commonDataGenerator;
-    private final PostGenerator postGenerator;
-    private final CommentGenerator commentGenerator;
-    private final static Logger LOGGER = LoggerFactory.getLogger(UserGenerator.class);
 
-    public void generateNRandomUser(int n) throws FirebaseAuthException, ExecutionException, InterruptedException, IOException {
+    private final CommonDataGenerator commonDataGenerator;
+
+    /**
+     * Generates N number of random users.
+     */
+    public List<User> generateNRandomUser(int n) throws FirebaseAuthException, IOException {
         List<User> users = new ArrayList<>();
         for (int i = 0; i < n; i++) {
             users.add(generateUser());
         }
-        updateUsers(users);
+        return users;
     }
 
-    private User generateUser() throws FirebaseAuthException, ExecutionException, InterruptedException, IOException {
+    private User generateUser() throws FirebaseAuthException, IOException {
         String name = generateName();
         String username = generateUserName(name);
         String email = generateEmail(username);
-        ArrayList<String> followers = generateFollowers(username);
-        String birthdate = generateBirthdate();
-        String photoUrl = generatePhotoUrl();
 
-        User user = new User();
-        user.setUsername(username);
-        user.setEmail(email);
-        user.setBirthdate(birthdate);
-        user.setDisplayName(name);
-        user.setFollowers(followers);
-        user.setFollowedUsers(new ArrayList<>());
-        user.setPhotoURL(photoUrl);
-
+        User user = User.builder()
+                .username(username)
+                .email(email)
+                .displayName(name)
+                .birthdate(generateBirthdate())
+                .followers(new ArrayList<>())
+                .followedUsers(new ArrayList<>())
+                .photoURL(generatePhotoUrl())
+                .messagesList(new ArrayList<>())
+                .build();
         userService.createUser(user, "123456");
-        generatePosts(user);
-        updateUser(user);
-
         return user;
     }
 
@@ -142,139 +128,4 @@ public class UserGenerator {
         return commonDataGenerator.generatePhotoUrl("src/main/resources/profileImages.txt");
     }
 
-    private ArrayList<String> generateFollowers(String username) throws FirebaseAuthException {
-        return generateRandomFollowers(username);
-    }
-
-    private ArrayList<String> generateRandomFollowers(String username) throws FirebaseAuthException {
-        ArrayList<String> userIds = userService.getEveryUsername();
-        int numberOfFollowers = generateNumberOfFollowers(userIds);
-        ArrayList<String> followers = new ArrayList<>();
-        while (numberOfFollowers != 0) {
-            int randomNumber = (int) ((Math.random() * (userIds.size() - 1)) + 1);
-            String potentialFollower = userIds.get(randomNumber);
-            // A user cannot follow themselves
-            if (potentialFollower.equals(username)) {
-                potentialFollower = userIds.get(0);
-            }
-            followers.add(potentialFollower);
-            userIds.remove(potentialFollower);
-            numberOfFollowers--;
-        }
-        return followers;
-    }
-
-    private int generateNumberOfFollowers(List<String> userIds) {
-        int min = 0;
-        int max = userIds.size();
-        return (int) (Math.random() * (max - min)) + min;
-    }
-
-    private void generatePosts(User user) throws ExecutionException, InterruptedException, IOException {
-        int numberOfPosts = (int) ((Math.random() * (10 - 1)) + 1);
-        ArrayList<String> posts = new ArrayList<>();
-        for (int i = 0; i < numberOfPosts; i++) {
-            Post post = postGenerator.generatePost(user.getUsername());
-            firestoreService.addDocumentToCollection(Names.POSTS, post, post.getPostId());
-            posts.add(post.getPostId());
-        }
-        user.setPosts(posts);
-    }
-
-    private void updateUsers(List<User> users) throws ExecutionException, InterruptedException {
-        updateFollowers(users);
-        updatePosts(users);
-        for (User user : users) {
-            updateUser(user);
-        }
-    }
-
-    private void updateFollowers(List<User> users) {
-        for (int i = users.size(); i != 0; i--) {
-            User user1 = users.get(i - 1);
-            for (String follower : user1.getFollowers()) {
-                User user2 = users.get(getIndexOfUserInList(users, follower));
-                List<String> user2FollowedUsers = user2.getFollowedUsers();
-                if (!user2FollowedUsers.contains(user1.getUsername())) {
-                    user2.getFollowedUsers().add(user1.getUsername());
-                }
-                LOGGER.info("User with userId " + follower + " had their followers updated");
-            }
-        }
-    }
-
-    private void updatePosts(List<User> users) throws ExecutionException, InterruptedException {
-        updateNumberOfLikesOnPost(users);
-        addCommentsToPosts(users);
-    }
-
-    private void updateNumberOfLikesOnPost(List<User> users) throws ExecutionException, InterruptedException {
-        for (User user : users) {
-            for (String postId : user.getPosts()) {
-                Post post = postService.getPost(postId);
-                post.setUsersThatLiked(generateUsersThatLike(user));
-                updatePost(post);
-            }
-        }
-    }
-
-    private void addCommentsToPosts(List<User> users) throws ExecutionException, InterruptedException {
-        for (User user : users) {
-            for (String postId : user.getPosts()) {
-                Post post = postService.getPost(postId);
-                int numberOfComments = generateNumberOfLikesAndComments(user);
-                ArrayList<String> followers = user.getFollowers();
-                while (numberOfComments != 0) {
-                    int randomFollowerIdIndex = (int) (Math.random() * followers.size());
-                    Comment comment = commentGenerator.generateComment(followers.get(randomFollowerIdIndex), postId);
-                    firestoreService.addDocumentToCollection(Names.COMMENTS, comment, comment.getCommentId());
-                    post.getCommentIds().add(comment.getCommentId());
-                    followers.remove(randomFollowerIdIndex);
-                    numberOfComments--;
-                }
-                updatePost(post);
-            }
-        }
-    }
-
-
-    private ArrayList<String> generateUsersThatLike(User user) {
-        int numberOfUsersThatLike = generateNumberOfLikesAndComments(user);
-        ArrayList<String> followers = new ArrayList<>(user.getFollowers());
-        ArrayList<String> usersThatLike = new ArrayList<>();
-        while (numberOfUsersThatLike != 0) {
-            int index = 0;
-            if (numberOfUsersThatLike != 1 || followers.size() != 1) {
-                index = (int) ((Math.random() * (followers.size() - 1)) + 1);
-            }
-            usersThatLike.add(followers.get(index));
-            followers.remove(index);
-            numberOfUsersThatLike--;
-        }
-
-        return usersThatLike;
-    }
-
-
-    private int generateNumberOfLikesAndComments(User user) {
-        int numberOfFollowers = user.getFollowers().size();
-        return numberOfFollowers > 1 ? (int) ((Math.random() * (numberOfFollowers - 1)) + 1) : 0;
-    }
-
-    private void updateUser(User user) throws ExecutionException, InterruptedException {
-        userService.updateUser(user);
-    }
-
-    private void updatePost(Post post) throws ExecutionException, InterruptedException {
-        postService.updatePost(post);
-    }
-
-    private int getIndexOfUserInList(List<User> users, String userId) {
-        for (int i = 0; i < users.size(); i++) {
-            if (users.get(i).getUsername().equals(userId)) {
-                return i;
-            }
-        }
-        return -1;
-    }
 }

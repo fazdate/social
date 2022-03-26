@@ -7,11 +7,11 @@
 
 .profile-picture {
     border-radius: 100%;
-    padding: auto;
 }
 
 .mat-header {
     padding-bottom: 2%;
+    display: flex;
 }
 
 .mat-buttons {
@@ -24,13 +24,16 @@
     margin: 0px 8px !important;
 }
 
-.subtitle-right {
-    display: inline;
-    float: right;
+.align-right {
+    position: absolute;
+    right: 1em;
+    top: 40px;
 }
 
 .subtitle-left {
     display: inline;
 }
 
-
+.liked {
+    color: blue;
+}

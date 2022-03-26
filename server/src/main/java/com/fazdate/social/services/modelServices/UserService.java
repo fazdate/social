@@ -22,27 +22,36 @@ public class UserService {
     private final FirestoreService firestoreService;
     private final AuthService authService;
 
+    /**
+     * Creates a user from the given User object and the given password
+     */
     public void createUser(User user, String password) throws FirebaseAuthException {
         firestoreService.addDocumentToCollection(Names.USERS, user, user.getUsername());
         authService.createUser(user, password);
         LOGGER.info("User with username: " + user.getUsername() + " was created!");
     }
 
+    /**
+     * Returns the User data from the given username
+     */
     public User getUser(String username) throws ExecutionException, InterruptedException {
         return firestoreService.getObjectFromDocument(Names.USERS, User.class, username);
     }
 
+    /**
+     * Updates a given user
+     */
     public void updateUser(User user) {
         updateUserInDatabase(user);
         LOGGER.info(user.getUsername() + " was updated!");
     }
 
-    public void deleteUser(String username) throws FirebaseAuthException {
-        firestoreService.deleteDocumentFromCollection(Names.USERS, username);
-        authService.deleteUser(username);
-        LOGGER.info(username + " was deleted!");
-    }
-
+    /**
+     * The first user will follow or unfollow the other user, depending on if the user already follows the other.
+     *
+     * @param username        - The user who (un)follows the other user
+     * @param anotherUsername - The user who gets (un)followed from the other user
+     */
     public void followOrUnfollowUser(String username, String anotherUsername) throws ExecutionException, InterruptedException {
         User user = getUserFromDatabase(username);
         User anotherUser = getUserFromDatabase(anotherUsername);
@@ -53,6 +62,9 @@ public class UserService {
         }
     }
 
+    /**
+     * Checks if the given user follows the other one. Returns true if yes
+     */
     public boolean doesUserFollowAnotherUser(String username, String anotherUsername) throws ExecutionException, InterruptedException {
         User user = getUserFromDatabase(username);
         for (String name : user.getFollowers()) {
@@ -79,6 +91,9 @@ public class UserService {
         LOGGER.info(anotherUser.getUsername() + " has unfollowed + " + user.getUsername());
     }
 
+    /**
+     * Gets every registered user's username
+     */
     public ArrayList<String> getEveryUsername() throws FirebaseAuthException {
         ListUsersPage listUsersPage = authService.getEveryUser();
         ArrayList<String> usernames = new ArrayList<>();
@@ -88,6 +103,13 @@ public class UserService {
         return usernames;
     }
 
+    /**
+     * Returns the displayName of the given username
+     */
+    public String getDisplayNameFromUsername(String username) throws ExecutionException, InterruptedException {
+        User user = getUserFromDatabase(username);
+        return user.getDisplayName();
+    }
 
     private User getUserFromDatabase(String username) throws ExecutionException, InterruptedException {
         return firestoreService.getObjectFromDocument(Names.USERS, User.class, username);

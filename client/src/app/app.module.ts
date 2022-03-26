@@ -19,6 +19,11 @@ import { provideFirestore, getFirestore } from '@angular/fire/firestore';
 import { HttpClientModule } from '@angular/common/http';
 import { PostComponent } from './components/post/post.component';
 import { AngularMaterialModule } from './angular-material.module';
+import { CommentViewComponent } from './components/comment-view/comment-view.component';
+import { PostWithCommentsComponent } from './components/post-with-comments/post-with-comments.component';
+import { DatePipe } from '@angular/common';
+import { MessagesListComponent } from './components/messages-list/messages-list.component';
+import { MessagesComponent } from './components/messages/messages.component';
 
 @NgModule({
   declarations: [
@@ -28,7 +33,11 @@ import { AngularMaterialModule } from './angular-material.module';
     SignupComponent,
     HomeComponent,
     ProfileComponent,
-    PostComponent
+    PostComponent,
+    CommentViewComponent,
+    PostWithCommentsComponent,
+    MessagesListComponent,
+    MessagesComponent
   ],
   imports: [
     BrowserModule,
@@ -43,7 +52,7 @@ import { AngularMaterialModule } from './angular-material.module';
     HttpClientModule,
     AngularMaterialModule
   ],
-  providers: [],
+  providers: [DatePipe],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

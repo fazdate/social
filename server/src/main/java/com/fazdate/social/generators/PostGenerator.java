@@ -15,14 +15,18 @@ import java.util.concurrent.ExecutionException;
 public class PostGenerator {
     private final CommonDataGenerator commonDataGenerator;
 
+    /**
+     * Generates a random Post from the given user
+     */
     public Post generatePost(String username) throws ExecutionException, InterruptedException, IOException {
-        Post post = new Post();
-        post.setPostId(commonDataGenerator.generateId(Names.POSTS));
-        post.setPosterUsername(username);
-        post.setTimestamp(Timestamp.now().toDate());
-        post.setText(commonDataGenerator.generateText(1, 25));
-        post.setImgSrc(generatePostImage());
-        post.setCommentIds(new ArrayList<>());
+        Post post = Post.builder()
+                .postId(commonDataGenerator.generateId(Names.POSTS))
+                .posterUsername(username)
+                .timestamp(Timestamp.now().toDate())
+                .text(commonDataGenerator.generateText(1, 25))
+                .imgSrc(generatePostImage())
+                .commentIds(new ArrayList<>())
+                .build();
         return post;
     }
 
@@ -34,7 +38,6 @@ public class PostGenerator {
         }
         return "";
     }
-
 
 
 }

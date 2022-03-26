@@ -20,10 +20,16 @@ public class FirestoreService {
     private final Firestore firestore = FirestoreClient.getFirestore();
     private final Logger LOGGER = LoggerFactory.getLogger(FirestoreService.class);
 
+    /**
+     * Adds a new document to the given collection.
+     */
     public <T> void addDocumentToCollection(Names name, T data, String documentId) {
         getCollection(name).document(documentId).set(data);
     }
 
+    /**
+     * Returns a document from the given collection in an object
+     */
     public <T> T getObjectFromDocument(Names name, Class<T> classType, String documentId) throws ExecutionException, InterruptedException {
         DocumentReference documentReference = getCollection(name).document(documentId);
         DocumentSnapshot document = documentReference.get().get();
@@ -34,21 +40,33 @@ public class FirestoreService {
         return object;
     }
 
+    /**
+     * Updates a document in the given collection. It will merge the existing and the given data.
+     */
     public <T> void updateDocumentInCollection(Names name, T data, String documentId) {
         getCollection(name).document(documentId).set(data, SetOptions.merge());
     }
 
+    /**
+     * Deletes the given document from the given collection
+     */
     public void deleteDocumentFromCollection(Names name, String documentId) {
         getCollection(name).document(documentId).delete();
     }
 
+    /**
+     * Returns with a list of every document in the given collection
+     */
     public List<QueryDocumentSnapshot> getEveryDocumentFromCollection(Names name) throws ExecutionException, InterruptedException {
         ApiFuture<QuerySnapshot> query = getCollection(name).get();
         QuerySnapshot querySnapshot = query.get();
         return querySnapshot.getDocuments();
     }
 
-    // If a document exists, it will return true
+    /**
+     * Checks if the given documentId is in the given collection.
+     * It will return true if its in the collection
+     */
     public boolean checkIfDocumentExistsInCollection(Names name, String documentId) throws ExecutionException, InterruptedException {
         List<QueryDocumentSnapshot> documentSnapshots = getEveryDocumentFromCollection(name);
         for (QueryDocumentSnapshot documentReference : documentSnapshots) {
@@ -59,14 +77,20 @@ public class FirestoreService {
         return false;
     }
 
+    /**
+     * Returns the whole collection that correlates to the given enum
+     */
     private CollectionReference getCollection(Names name) {
         return firestore.collection(Objects.requireNonNull(CollectionNames.getCollectionName(name)));
     }
 
+    /**
+     * Deletes the whole collection that correlates to the given enum
+     */
     public void deleteCollection(Names name) {
         try {
             CollectionReference collection = getCollection(name);
-            ApiFuture<QuerySnapshot> future  = collection.limit(1024).get();
+            ApiFuture<QuerySnapshot> future = collection.limit(1024).get();
             int deleted = 0;
             List<QueryDocumentSnapshot> documents = future.get().getDocuments();
             for (QueryDocumentSnapshot document : documents) {
@@ -80,17 +104,5 @@ public class FirestoreService {
         } catch (Exception e) {
             LOGGER.warn("Error deleting collection : " + e.getMessage());
         }
-    }
-
-    public boolean doesUserExists(String userId) throws ExecutionException, InterruptedException {
-        return checkIfDocumentExistsInCollection(Names.USERS, userId);
-    }
-
-    public boolean doesPostExists(String postId) throws ExecutionException, InterruptedException {
-        return checkIfDocumentExistsInCollection(Names.POSTS, postId);
-    }
-
-    public boolean doesCommentExists(String commentId) throws ExecutionException, InterruptedException {
-        return checkIfDocumentExistsInCollection(Names.COMMENTS, commentId);
     }
 }

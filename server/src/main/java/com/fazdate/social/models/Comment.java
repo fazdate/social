@@ -1,16 +1,15 @@
 package com.fazdate.social.models;
 
+import lombok.Builder;
 import lombok.Data;
-import lombok.NoArgsConstructor;
-
-import com.google.cloud.Timestamp;
+import java.util.Date;
 
 @Data
-@NoArgsConstructor
+@Builder
 public class Comment {
     private String commentId;
     private String commenterUsername;
     private String postId;
     private String text;
-    private Timestamp timestamp;
+    private Date timestamp;
 }

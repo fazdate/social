@@ -1,0 +1,27 @@
+.messages-list {
+    display: flex;
+    justify-content: center;
+    margin-top: 2%;
+    margin-bottom: 2%;
+}
+
+.mat-card:hover {
+    background-color: #dee2e6;
+}
+
+.profile-picture {
+    border-radius: 100%;
+}
+
+mat-card-header {
+    width: 250px;
+}
+
+mat-card-title {
+    padding-left: 10px;
+    padding-top: 10px;
+}
+
+.mat-card-header .mat-card-title {
+    margin: 0;
+}

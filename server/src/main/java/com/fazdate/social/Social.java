@@ -12,7 +12,7 @@ public class Social implements CommandLineRunner {
 
     @Override
     public void run(String... args) throws Exception {
-        // databaseRecreater.recreateDatabase();
+        // databaseRecreater.recreateDatabase(10);
     }
 
 }

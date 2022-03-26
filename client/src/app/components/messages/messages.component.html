@@ -1,0 +1,47 @@
+<div class="header-container">
+    <button class="redirect-button" mat-fab color="primary" (click)="redirectToMessagesList()">
+        <mat-icon>arrow_back</mat-icon>
+    </button>
+    <h1 class="text-center">{{ otherUserDisplayName }}</h1>
+    <button class="message-writer-button" mat-fab color="primary" (click)="showMessageWriter()">
+        <mat-icon>create</mat-icon>
+    </button>
+</div>
+
+<div class="message-container">
+    <div *ngFor="let message of messages">
+
+        <div *ngIf="isOwnMessage(message)" class="messages">
+            <div class="own-message-timestamp timestamp">
+                {{ getDate(message.timestamp!) }}
+            </div>
+            <div class="own-message message">
+                {{ message.messageText }}
+            </div>
+            <img width="50" height="50" [src]="ownPhotoUrl" class="'own-profile-photo profile-photo">
+        </div>
+
+        <div *ngIf="!isOwnMessage(message)" class="messages">
+            <img width="50" height="50" [src]="otherUserPhotoUrl" class="not-own-profile-photo profile-photo">
+            <div class="not-own-message message">
+                {{ message.messageText }}
+            </div>
+            <div class="not-own-message-timestamp timestamp">
+                {{ getDate(message.timestamp!) }}
+            </div>
+        </div>
+    </div>
+</div>
+
+<div *ngIf="isWritingMessage" class="message-writer mat-elevation-z5">
+    <form [formGroup]="messageForm" class="message-writer-form">
+        <mat-form-field>
+            <textarea matInput cdkTextareaAutosize cdkAutosizeMinRows="1" cdkAutosizeMaxRows="5"
+                formControlName="text" placeholder="Text" class="message-text"></textarea>
+        </mat-form-field>
+        <button mat-mini-fab type="submit" class="margin-top" class="send-button" color="primary"
+            (click)="sendMessage()">
+            <mat-icon>send</mat-icon>
+        </button>
+    </form>
+</div>

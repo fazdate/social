@@ -1,8 +1,7 @@
-import { CdkTextareaAutosize } from '@angular/cdk/text-field';
-import { Component, NgZone, OnInit, ViewChild } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { Timestamp } from 'firebase/firestore';
-import { concatMap, take } from 'rxjs';
+import { concatMap } from 'rxjs';
 import { Post } from 'src/app/models/post';
 import { ImageUploadService } from 'src/app/services/image-upload.service';
 import { PostsService } from 'src/app/services/posts.service';
@@ -17,8 +16,6 @@ export class HomeComponent implements OnInit {
 
   user$ = this.usersService.currentUserProfile$;
   isCreatingPost = false
-  @ViewChild('autosize')
-  autosize!: CdkTextareaAutosize
   imageFile!: File
   doesPostHaveImage = false
   username = ""
@@ -27,7 +24,6 @@ export class HomeComponent implements OnInit {
     private usersService: UsersService,
     private postService: PostsService,
     private imageUploadService: ImageUploadService,
-    private _ngZone: NgZone
   ) { }
 
   ngOnInit(): void {
@@ -71,10 +67,6 @@ export class HomeComponent implements OnInit {
   uploadImage(event: any) {
     this.imageFile = event.target.files[0]
     this.doesPostHaveImage = true
-  }
-
-  triggerResize() {
-    this._ngZone.onStable.pipe(take(1)).subscribe(() => this.autosize.resizeToFitContent(true));
   }
 
 }

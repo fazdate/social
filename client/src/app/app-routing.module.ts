@@ -6,13 +6,21 @@ import { LoginComponent } from './components/login/login.component';
 import { SignupComponent } from './components/signup/signup.component';
 import { canActivate, redirectLoggedInTo, redirectUnauthorizedTo } from '@angular/fire/auth-guard';
 import { ProfileComponent } from './components/profile/profile.component';
+import { PostWithCommentsComponent } from './components/post-with-comments/post-with-comments.component';
+import { MessagesListComponent } from './components/messages-list/messages-list.component';
+import { MessagesComponent } from './components/messages/messages.component';
 
-const redirectToLogin = () => redirectUnauthorizedTo(['login']);
+const redirectToLogin = () => redirectUnauthorizedTo(['landing']);
 const redirectToHome = () => redirectLoggedInTo(['home']);
 
 const routes: Routes = [
   {
     path: '',
+    component: HomeComponent,
+    ...canActivate(redirectToLogin),
+  },
+  {
+    path: 'landing',
     pathMatch: 'full',
     component: LandingComponent,
   },
@@ -27,15 +35,25 @@ const routes: Routes = [
     ...canActivate(redirectToHome),
   },
   {
-    path: 'home',
-    component: HomeComponent,
-    ...canActivate(redirectToLogin),
-  },
-  {
     path: 'profile/:username',
     component: ProfileComponent,
     ...canActivate(redirectToLogin)
-  }
+  },
+  {
+    path: 'post/:postId',
+    component: PostWithCommentsComponent,
+    ...canActivate(redirectToLogin)
+  },
+  {
+    path: 'messagesList',
+    component: MessagesListComponent,
+    ...canActivate(redirectToLogin)
+  },
+  {
+    path: 'messages/:messagesListId',
+    component: MessagesComponent,
+    ...canActivate(redirectToLogin)
+  },
 ];
 
 @NgModule({

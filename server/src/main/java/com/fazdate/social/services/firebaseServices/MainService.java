@@ -14,6 +14,9 @@ import java.util.Objects;
 @Service
 public class MainService {
 
+    /**
+     * Creates the FirebaseApp instance from the given serviceAccountKey.json file
+     */
     public static void initFirebase() throws IOException {
         ClassLoader classLoader = Application.class.getClassLoader();
 

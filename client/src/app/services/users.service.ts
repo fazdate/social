@@ -4,6 +4,7 @@ import { doc, Firestore } from '@angular/fire/firestore';
 import { HotToastService } from '@ngneat/hot-toast';
 import { docData } from 'rxfire/firestore';
 import { Observable, of, switchMap } from 'rxjs';
+import { urls } from 'src/environments/environment';
 import { ProfileUser } from '../models/user-profile';
 import { AuthenticationService } from './authentication.service';
 
@@ -33,7 +34,7 @@ export class UsersService {
   ) { }
 
   async updateUser(user: ProfileUser) {
-    this.http.post('http://localhost:8080/updateUser', user).pipe(
+    this.http.post(urls.updateUserUrl, user).pipe(
       this.toast.observe(
         {
           loading: 'Updating profile...',
@@ -56,7 +57,7 @@ export class UsersService {
 
   async getUser(username: string) {
     const httpParams = new HttpParams().set("username", username)
-    const result = await this.http.get<ProfileUser>('http://localhost:8080/getUser', { 'params': httpParams }).toPromise()
+    const result = await this.http.get<ProfileUser>(urls.getUserUrl, { 'params': httpParams }).toPromise()
     return {
       username: result?.username,
       email: result?.email,
@@ -71,21 +72,29 @@ export class UsersService {
 
   async getUserObservable(username: string) {
     const httpParams = new HttpParams().set("username", username)
-    return this.http.get<ProfileUser>('http://localhost:8080/getUser', { 'params': httpParams })
+    return this.http.get<ProfileUser>(urls.getUserUrl, { 'params': httpParams })
   }
 
   async followOrUnfollowUser(username: string, anotherUsername: string) {
     let httpParams = new HttpParams().set("username", username).append("anotherUsername", anotherUsername)
-    this.http.put('http://localhost:8080/followOrUnfollowUser', null, { 'params': httpParams }).toPromise()
+    this.http.put(urls.followOrUnfollowUserUrl, null, { 'params': httpParams }).toPromise()
+    window.location.reload()
   }
 
   async getEveryUsername() {
-    const result = await this.http.get<string[]>('http://localhost:8080/getEveryUsername').toPromise()
+    const result = await this.http.get<string[]>(urls.getEveryUsernameUrl).toPromise()
     let usernames: string[] = []
     for (let i = 0; i < result!.length; i++) {
       usernames.push(result![i])
     }
     return usernames
+  }
+
+  async getDisplayNameFromUsername(username: string) {
+    let httpParams = new HttpParams().set("username", username)
+    const result = await this.http.get<string>(urls.getDisplayNameFromUsernameUrl, { 'params': httpParams }).toPromise()
+    let displayName = result?.valueOf()
+    return displayName
   }
 }
 
