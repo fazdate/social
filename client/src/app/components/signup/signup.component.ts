@@ -69,7 +69,6 @@ export class SignupComponent implements OnInit {
     }
   }
 
-
   submit() {
     if (!this.signUpForm.valid) {
       return;

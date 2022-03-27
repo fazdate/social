@@ -29,3 +29,7 @@
 .comment-form-field {
     width: 28em;
 }
+
+.mat-header {
+    cursor: pointer;
+}

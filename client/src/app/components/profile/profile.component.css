@@ -48,10 +48,12 @@
     border-radius: 100%;
 }
 
-.proflie-details-infos {
-    display: inline-block;
+.profile-details-infos {
+    display: flex;
     margin: 30px;
-    font-size: 16px;
+    font-size: 15px;
+    flex-direction: column;
+    justify-content: center;
 }
 
 .profile-details-stats {
@@ -63,8 +65,7 @@
 }
 
 .follow-button {
-    display: block;
-    margin: 0 auto;
+    margin-right: 20px;
 }
 
 .edit-button {

@@ -1,39 +1,47 @@
 <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet" />
 
 <mat-toolbar color="primary">
-  <span [style.cursor]="'pointer'" routerLink="/">
+  <span [style.cursor]="'pointer'" routerLink="/" class="social-button">
     Social!
   </span>
-  <ng-container *ngIf="user$ | async as user; else loginButton">
-    <mat-form-field>
-      <input type="text" placeholder="Search" matInput [formControl]="search" (keyup.enter)="redirectToUser()" [matAutocomplete]="auto" >
-         <mat-autocomplete #auto="matAutocomplete">
-           <mat-option *ngFor="let option of options" [value]="option">
-             {{option}}
-          </mat-option>
+  <ng-container *ngIf="user$ | async as user">
+    <mat-form-field class="search-field" floatLabel="never">
+      <input type="text" placeholder="{{ 'search-text' | transloco}}" matInput [formControl]="search"
+        (keyup.enter)="redirectToUser()" [matAutocomplete]="auto" class="text-center">
+      <mat-autocomplete #auto="matAutocomplete">
+        <mat-option *ngFor="let option of options" [value]="option">
+          {{option}}
+        </mat-option>
       </mat-autocomplete>
-   </mat-form-field>
-    <button mat-button [matMenuTriggerFor]="userMenu">
+    </mat-form-field>
+    <button mat-button [matMenuTriggerFor]="userMenu" class="user-menu">
       <img class="profile-image-toolbar" width="30" height="30"
         [src]="user.photoURL ?? 'assets/images/image-placeholder.png'" />
       {{user.displayName}}
       <mat-icon>expand_more</mat-icon>
     </button>
   </ng-container>
-  <ng-template #loginButton>
-    <button mat-button routerLink="login">
-      <mat-icon>login</mat-icon>
-      Login
-    </button>
-  </ng-template>
+  <button mat-button [matMenuTriggerFor]="languageMenu" class="language-menu">
+    <mat-icon>language</mat-icon>
+    <mat-icon>expand_more</mat-icon>
+  </button>
 </mat-toolbar>
 
 <div>
   <router-outlet></router-outlet>
 </div>
 
+<mat-menu #languageMenu="matMenu" class="language-selector">
+  <button mat-menu-item (click)="selectLanguage('hu')" class="language-selector-item">
+    <img width="30" height="30" src="https://catamphetamine.gitlab.io/country-flag-icons/3x2/HU.svg">
+  </button>
+  <button mat-menu-item (click)="selectLanguage('en')" class="language-selector-item">
+    <img width="30" height="30" src="https://catamphetamine.gitlab.io/country-flag-icons/3x2/GB.svg">
+  </button>
+</mat-menu>
+
 <mat-menu #userMenu="matMenu" class="menu">
-  <button mat-menu-item [routerLink]="profileLink">Profile</button>
-  <button mat-menu-item (click)="redirectToMessagesList()">Messages</button>
-  <button mat-menu-item (click)="logout()">Logout</button>
+  <button mat-menu-item [routerLink]="profileLink">{{ 'profile-button-text' | transloco}}</button>
+  <button mat-menu-item (click)="redirectToMessagesList()">{{ 'messages-button-text' | transloco}}</button>
+  <button mat-menu-item (click)="logout()">{{ 'logout-button-text' | transloco}}</button>
 </mat-menu>

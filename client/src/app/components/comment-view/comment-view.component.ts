@@ -1,7 +1,7 @@
 import { DatePipe } from '@angular/common';
 import { Component, Input, OnInit, SimpleChanges } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
-import { ActivatedRoute, Params } from '@angular/router';
+import { ActivatedRoute, Params, Router } from '@angular/router';
 import { Timestamp } from 'firebase/firestore';
 import { Observable } from 'rxjs';
 import { Comment } from 'src/app/models/comment';
@@ -33,7 +33,8 @@ export class CommentViewComponent implements OnInit {
     private commentService: CommentService,
     private usersService: UsersService,
     private datePipe: DatePipe,
-    private activatedRoute: ActivatedRoute
+    private activatedRoute: ActivatedRoute,
+    private router: Router
   ) { }
 
   ngOnInit(): void {
@@ -76,5 +77,10 @@ export class CommentViewComponent implements OnInit {
 
   getDate(date: Date) {
     return this.datePipe.transform(date, 'MMMM dd, HH:ss');
+  }
+
+  redirectToPosterProfile(commenterUsername: string) {  
+    let link = "/profile/" + commenterUsername
+    this.router.navigate([link])
   }
 }

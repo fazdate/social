@@ -20,18 +20,22 @@
 }
 
 .not-own-message-timestamp {
-    padding-left: 0;
+    transform: translateX(-270%);
+}
+
+.own-message-timestamp {
+    transform: translateX(270%);
 }
 
 .text-center {
     padding-top: 2%;
+    cursor: pointer;
 }
 
 .profile-photo {
     border-radius: 100%;
     padding-left: 1%;
     padding-right: 1%;
-
 }
 
 .timestamp {
@@ -41,6 +45,7 @@
 .messages {
     display: flex;
     align-items: center;
+    margin-bottom: 10px;
 }
 
 .redirect-button {

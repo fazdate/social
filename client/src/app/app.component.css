@@ -1,13 +1,40 @@
-mat-toolbar {
-    justify-content: space-between;
-}
-
 .profile-image-toolbar {
     border-radius: 100%;
-    margin-right: 8px;
+    margin-right: 10px;
 }
 
 .mat-menu-item {
     padding: 0;
     text-align: center;
+}
+
+.language-selector-item {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+}
+
+.mat-menu-content:not(:empty) {
+    padding-top: 0;
+    padding-bottom: 0;
+}
+
+.language-menu {
+    position: absolute;
+    right: 0;
+}
+
+.user-menu {
+    position: absolute;
+    right: 4em;
+}
+
+.social-button {
+    position: absolute;
+}
+
+.search-field {
+    margin: auto;
+    transform: translate(0, -15%);
 }

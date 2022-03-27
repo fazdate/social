@@ -1,5 +1,6 @@
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
+import { Router } from '@angular/router';
 import { HotToastService } from '@ngneat/hot-toast';
 import { urls } from 'src/environments/environment';
 import { Message } from '../models/message';
@@ -8,11 +9,11 @@ import { MessagesList } from '../models/messages-list';
 @Injectable({
   providedIn: 'root'
 })
-export class MessageService {
+export class MessagesService {
 
   constructor(
     private http: HttpClient,
-    private toast: HotToastService
+    private toast: HotToastService,
   ) { }
 
   async getMessage(messageId: string) {
@@ -65,6 +66,7 @@ export class MessageService {
           success: 'Message sent',
           error: 'There was an error while sending message',
         })).subscribe()
+    await new Promise(resolve => setTimeout(resolve, 500));
     window.location.reload();
   }
 
@@ -73,4 +75,12 @@ export class MessageService {
     let postId = result?.valueOf()
     return postId
   }
+
+  async getMessagesListIdBetweenUsers(username1: string, username2: string) {
+    const httpParams = new HttpParams().set("username1", username1).append("username2", username2)
+    const result = await this.http.get<string>(urls.getMessagesListIdBetweenUsersUrl, { 'params': httpParams }).toPromise()
+    let messagesListId = result?.valueOf()
+    return messagesListId
+  }
+
 }

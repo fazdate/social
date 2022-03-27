@@ -1,0 +1,57 @@
+{
+    "search-text": "Search",
+    "profile-button-text": "Profile",
+    "messages-button-text": "Messages",
+    "login-button-text": "Login",
+    "logout-button-text": "Logout",
+
+    "create-post-text": "What's on your mind?",
+    "input-placeholder": "Text",
+    "upload-image-button-text": "Upload image",
+    "post-button-text": "Post",
+
+    "sign-up-text": "Regisztráció",
+    "username-placeholder": "Username",
+    "username-required": "Username is required",
+    "name-placeholder": "Name",
+    "name-required": "Name is required",
+    "email-placeholder": "Email address",
+    "email-required": "Email address is required",
+    "email-valid": "Please enter a valid email address",
+    "birthdate-placeholder": "Birthdate",
+    "birthdate-required": "Birthdate is required",
+    "password-placeholder": "Password",
+    "password-required": "Password is required",
+    "password-length": "Password must be at least 6 characters long",
+    "confirm-password-placeholder": "Confirm password",
+    "confirm-password-required": "Confirm password is required",
+    "confirm-password-length": "Confirm password must be at least 6 characters long",
+    "password-match": "Passwords should match",
+    "already-registered-text": "Already registered?",
+    "login-button": "Login",
+    "sign-up-button-text": "Sign Up!",
+
+    "login-text": "Login",
+    "new-to-platform-text": "Don't have an account?",
+    "sign-up-button": "Sign Up!",
+
+    "update-profile-text": "Update your profile",
+    "display-name-placeholder": "Display name",
+    "save-button-text": "Save",
+    "username-text": "Username:",
+    "birthdate-text": "Born on:",
+    "unfollow-button-text": "Unfollow",
+    "follow-button-text": "Follow",
+    "followers-text-1": "Has",
+    "followers-text-2": "followers",
+    "follows-text-1": "Follows",
+    "follows-text-2": "users",
+    "posts-text-1": "Has",
+    "posts-text-2": "posts",
+
+    "likes-text": "likes",
+    "comments-text": "comments",
+
+    "send-first-message-text": "Send a first message to"
+
+}

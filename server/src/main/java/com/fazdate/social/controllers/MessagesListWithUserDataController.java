@@ -23,5 +23,4 @@ public class MessagesListWithUserDataController {
     public MessagesListWithUserDataDto[] getUsersEveryMessagesListWithUserData(String username) throws ExecutionException, InterruptedException {
         return messagesListWIthUserDataService.getUsersEveryMessagesListWithUserData(username);
     }
-
 }

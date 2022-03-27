@@ -2,7 +2,8 @@
     <button class="redirect-button" mat-fab color="primary" (click)="redirectToMessagesList()">
         <mat-icon>arrow_back</mat-icon>
     </button>
-    <h1 class="text-center">{{ otherUserDisplayName }}</h1>
+    <h1 *ngIf="isEmptyMessagesList" class="text-center" (click)="redirectToPosterProfile(otherUsername)">{{ 'send-first-message-text' | transloco }} {{ otherUserDisplayName }}</h1>
+    <h1 *ngIf="!isEmptyMessagesList"class="text-center" (click)="redirectToPosterProfile(otherUsername)">{{ otherUserDisplayName }}</h1>
     <button class="message-writer-button" mat-fab color="primary" (click)="showMessageWriter()">
         <mat-icon>create</mat-icon>
     </button>
@@ -13,12 +14,14 @@
 
         <div *ngIf="isOwnMessage(message)" class="messages">
             <div class="own-message-timestamp timestamp">
-                {{ getDate(message.timestamp!) }}
+                {{ message.timestamp! | translocoDate: { timeStyle: 'short' ,dateStyle: 'short'} }}
             </div>
             <div class="own-message message">
                 {{ message.messageText }}
             </div>
-            <img width="50" height="50" [src]="ownPhotoUrl" class="'own-profile-photo profile-photo">
+            <div>
+                <img width="50" height="50" [src]="ownPhotoUrl" class="'own-profile-photo profile-photo">
+            </div>
         </div>
 
         <div *ngIf="!isOwnMessage(message)" class="messages">
@@ -27,7 +30,7 @@
                 {{ message.messageText }}
             </div>
             <div class="not-own-message-timestamp timestamp">
-                {{ getDate(message.timestamp!) }}
+                {{ message.timestamp! | translocoDate: { timeStyle: 'short' ,dateStyle: 'short'} }}
             </div>
         </div>
     </div>

@@ -1,26 +1,26 @@
 <div class="form-container mat-elevation-z5">
-    <h1>Login</h1>
+    <h1>{{ 'login-text' | transloco}}</h1>
     <form [formGroup]="loginForm" (ngSubmit)="submit()">
         <mat-form-field>
-            <input matInput placeholder="Email address" formControlName="email" />
+            <input matInput placeholder="{{ 'email-placeholder' | transloco}}" formControlName="email" />
             <mat-error *ngIf="email?.errors?.['required']">
-                Email address is required
+                {{ 'email-required' | transloco}}
             </mat-error>
             <mat-error *ngIf="email?.errors?.['email']">
-                Please enter a valid email address
+                {{ 'email-valid' | transloco}}
             </mat-error>
         </mat-form-field>
         <mat-form-field>
             <input matInput type="password" placeholder="Password" formControlName="password" />
             <mat-error *ngIf="password?.errors?.['required']">
-                Password is required
+                {{ 'password-required' | transloco}}
             </mat-error>
         </mat-form-field>
         <div class="center margin-top">
-            <button type="submit" mat-raised-button color="primary">Login</button>
+            <button type="submit" mat-raised-button color="primary">{{ 'login-button-text' | transloco}}</button>
         </div>
         <span class="center margin-top">
-            New to our platform? <a class="sign-up-link" routerLink="/signup">Sign up!</a>
+            {{ 'new-to-platform-text' | transloco}} <a class="sign-up-link" routerLink="/signup">{{ 'sign-up-button' | transloco}}</a>
         </span>
     </form>
 </div>

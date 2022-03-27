@@ -38,4 +38,9 @@ public class MessageController {
         return service.getEveryMessageFromMessagesList(messagesListId);
     }
 
+    @GetMapping("/getMessagesListIdBetweenUsers")
+    public String getMessagesListIdBetweenUsers(String username1, String username2) throws ExecutionException, InterruptedException {
+        return service.getMessagesListIdBetweenUsers(username1, username2);
+    }
+
 }

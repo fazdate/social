@@ -1,10 +1,12 @@
 import { Component, OnInit } from '@angular/core';
 import { FormControl, FormGroup } from '@angular/forms';
-import { ActivatedRoute, Params } from '@angular/router';
+import { ActivatedRoute, Params, Router } from '@angular/router';
+import { TranslocoService } from '@ngneat/transloco';
 import { UntilDestroy } from '@ngneat/until-destroy';
 import { concatMap, Observable } from 'rxjs';
 import { ProfileUser } from 'src/app/models/user-profile';
 import { ImageUploadService } from 'src/app/services/image-upload.service';
+import { MessagesService } from 'src/app/services/messages.service';
 import { UsersService } from 'src/app/services/users.service';
 
 @UntilDestroy()
@@ -15,8 +17,8 @@ import { UsersService } from 'src/app/services/users.service';
 })
 export class ProfileComponent implements OnInit {
 
-  currentUser$ = this.usersService.currentUserProfile$
-  curretUserName = ""
+  ownUser$ = this.usersService.currentUserProfile$
+  ownUsername = ""
   user$!: Observable<ProfileUser>
   username = ""
   isOwnProfile = false
@@ -30,7 +32,10 @@ export class ProfileComponent implements OnInit {
   constructor(
     private imageUploadService: ImageUploadService,
     private usersService: UsersService,
-    private route: ActivatedRoute
+    private route: ActivatedRoute,
+    private messagesService: MessagesService,
+    private router: Router,
+    private translocoService: TranslocoService
   ) { }
 
   ngOnInit(): void {
@@ -48,16 +53,16 @@ export class ProfileComponent implements OnInit {
             displayName: res.displayName
           })
 
-          this.currentUser$.subscribe(userRes => {
-            this.curretUserName = userRes.username!
+          this.ownUser$.subscribe(userRes => {
+            this.ownUsername = userRes.username!
             if (res.username === userRes.username) {
               this.isOwnProfile = true
             }
-            for (let name of userRes.followedUsers!) {
+            for (let name of userRes.followedUsers!) {            
               if (name == res.username!) {
-                this.followButtonText = "Unfollow"
+                this.followButtonText = this.translocoService.translate('unfollow-button-text')
               } else {
-                this.followButtonText = "Follow"
+                this.followButtonText = this.translocoService.translate('follow-button-text')
               }
             }
           })
@@ -84,11 +89,23 @@ export class ProfileComponent implements OnInit {
   }
 
   follow() {
-    this.usersService.followOrUnfollowUser(this.username!, this.curretUserName)
+    this.usersService.followOrUnfollowUser(this.username!, this.ownUsername)
   }
 
   setisChangingProfile() {
     this.isChangingProfile = !this.isChangingProfile
+  }
+
+  redirectToMessagesList(username: string) {
+    this.messagesService.getMessagesListIdBetweenUsers(this.ownUsername, username)
+      .then(async result => {
+        let messagesListId = result?.valueOf()
+        if (messagesListId === undefined) {
+          this.redirectToMessagesList(username)
+        }       
+        let link = "/messages/" + messagesListId
+        this.router.navigate([link])
+      })
   }
 
 }

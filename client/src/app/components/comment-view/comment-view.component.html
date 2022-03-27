@@ -1,6 +1,6 @@
 <div class="card" *ngFor="let comment of commentsWithUserData">
     <mat-card class="mat-elevation-z5">
-        <mat-card-header class="mat-header">
+        <mat-card-header class="mat-header" (click)="redirectToPosterProfile(comment.comment?.commenterUsername!)">
             <div mat-card-avatar>
                 <img width="50" height="50" [src]="comment.photoUrl" class="profile-picture">
             </div>
@@ -9,7 +9,7 @@
                 <mat-card-subtitle>{{ comment.comment.commenterUsername }}</mat-card-subtitle>
             </div>
             <div class="align-right">
-                <mat-card-subtitle>{{ getDate(comment.comment.timestamp!) }}</mat-card-subtitle>
+                <mat-card-subtitle>{{ comment.comment?.timestamp! | translocoDate: { timeStyle: 'short' ,dateStyle: 'short'} }}</mat-card-subtitle>
             </div>
         </mat-card-header>
         <mat-card-content class="comment">

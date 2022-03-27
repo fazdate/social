@@ -7,7 +7,6 @@ import { environment } from '../environments/environment';
 import { provideAuth,getAuth } from '@angular/fire/auth';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { ReactiveFormsModule } from '@angular/forms';
-import { LandingComponent } from './components/landing/landing.component';
 import { LoginComponent } from './components/login/login.component';
 import { SignupComponent } from './components/signup/signup.component';
 import { HomeComponent } from './components/home/home.component';
@@ -24,11 +23,12 @@ import { PostWithCommentsComponent } from './components/post-with-comments/post-
 import { DatePipe } from '@angular/common';
 import { MessagesListComponent } from './components/messages-list/messages-list.component';
 import { MessagesComponent } from './components/messages/messages.component';
+import { TranslocoRootModule } from './transloco-root.module';
+import { TranslocoLocaleModule } from '@ngneat/transloco-locale';
 
 @NgModule({
   declarations: [
     AppComponent,
-    LandingComponent,
     LoginComponent,
     SignupComponent,
     HomeComponent,
@@ -50,7 +50,9 @@ import { MessagesComponent } from './components/messages/messages.component';
     provideFirestore(() => getFirestore()),
     HotToastModule.forRoot(),
     HttpClientModule,
-    AngularMaterialModule
+    AngularMaterialModule,
+    TranslocoRootModule,
+    TranslocoLocaleModule
   ],
   providers: [DatePipe],
   bootstrap: [AppComponent]

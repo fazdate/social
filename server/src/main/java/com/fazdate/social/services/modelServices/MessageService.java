@@ -44,6 +44,13 @@ public class MessageService {
         return commonDataGenerator.generateId(Names.MESSAGES);
     }
 
+    /**
+     * Returns a unique random id for a new messagesList
+     */
+    public String generateMessagesListId() throws ExecutionException, InterruptedException {
+        return commonDataGenerator.generateId(Names.MESSAGESLIST);
+    }
+
     private void addFirstMessagesToUsers(User user, Message message) throws ExecutionException, InterruptedException {
         MessagesList messagesList = MessagesList.builder()
                 .messagesListId(commonDataGenerator.generateId(Names.MESSAGESLIST))
@@ -69,6 +76,25 @@ public class MessageService {
         firestoreService.addDocumentToCollection(Names.MESSAGES, message, message.getMessageId());
     }
 
+    public void createEmptyMessagesList(String username1, String username2) throws ExecutionException, InterruptedException {
+        MessagesList messagesList = MessagesList.builder()
+                .messagesListId(generateMessagesListId())
+                .messageIds(new ArrayList<>())
+                .username1(username1)
+                .username2(username2)
+                .build();
+
+        User user1 = getUserFromDatabase(username1);
+        user1.getMessagesList().add(messagesList.getMessagesListId());
+        updateUserInDatabase(user1);
+
+        User user2 = getUserFromDatabase(username2);
+        user2.getMessagesList().add(messagesList.getMessagesListId());
+        updateUserInDatabase(user2);
+
+        firestoreService.addDocumentToCollection(Names.MESSAGESLIST, messagesList, messagesList.getMessagesListId());
+    }
+
     /**
      * Returns a message from the given id
      */
@@ -86,7 +112,29 @@ public class MessageService {
             messages.add(getMessage(messageId));
         }
         return messages.toArray(new Message[messages.size()]);
+    }
 
+    /**
+     * Gets the messagesList between the two given users.
+     * If they don't already have one, it will create a new, empty one for them.
+     */
+    public String getMessagesListIdBetweenUsers(String username1, String username2) throws ExecutionException, InterruptedException {
+        User user1 = getUserFromDatabase(username1);
+        User user2 = getUserFromDatabase(username2);
+
+        for (String messagesListId : user1.getMessagesList()) {
+            if (user2.getMessagesList().contains(messagesListId)) {
+                LOGGER.info(messagesListId);
+                return messagesListId;
+            }
+        }
+
+        // If no messagesList exists between the users,
+        // it will create a new one, and then call this method again
+        createEmptyMessagesList(username1, username2);
+        getMessagesListIdBetweenUsers(username1, username2);
+
+        return "";
     }
 
     /**

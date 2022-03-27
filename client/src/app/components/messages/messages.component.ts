@@ -8,7 +8,7 @@ import { Message } from 'src/app/models/message';
 import { MessagesList } from 'src/app/models/messages-list';
 import { MessagesListWithUserData } from 'src/app/models/messages-list-with-user-data';
 import { ProfileUser } from 'src/app/models/user-profile';
-import { MessageService } from 'src/app/services/message.service';
+import { MessagesService } from 'src/app/services/messages.service';
 import { MessagesListWithUserDataService } from 'src/app/services/messages-list-with-user-data.service';
 import { UsersService } from 'src/app/services/users.service';
 
@@ -28,7 +28,8 @@ export class MessagesComponent implements OnInit {
   messagesListId = ""
   messagesListWithUserData!: MessagesListWithUserData
   messages: Message[] = []
-  isWritingMessage = true // false
+  isWritingMessage = false
+  isEmptyMessagesList = false
   messageForm = new FormGroup({
     text: new FormControl('', Validators.required),
   })
@@ -37,7 +38,7 @@ export class MessagesComponent implements OnInit {
     private activatedRoute: ActivatedRoute,
     private router: Router,
     private messagesListWithUserDataService: MessagesListWithUserDataService,
-    private messageService: MessageService,
+    private messageService: MessagesService,
     private usersService: UsersService,
     private datePipe: DatePipe,
   ) { }
@@ -52,15 +53,19 @@ export class MessagesComponent implements OnInit {
       this.messagesListWithUserDataService.getMessageListWIthUserData(params['messagesListId'])
         .then(result => {
           this.messagesListWithUserData = result
-        })
-        this.messageService.getEveryMessageFromMessagesList(params['messagesListId'])
-        .then(result => {
-          this.messages = result
           this.otherUsername = this.getOtherUsername()!
           this.usersService.getUser(this.otherUsername).then(res => {
             this.otherUserPhotoUrl = res.photoURL!,
-            this.otherUserDisplayName = res.displayName!
+              this.otherUserDisplayName = res.displayName!
           })
+        })
+      this.messageService.getEveryMessageFromMessagesList(params['messagesListId'])
+        .then(result => {
+          this.messages = result
+          if (this.messages.length === 0) {
+            this.isEmptyMessagesList = true
+            this.isWritingMessage = true
+          } 
         })
     })
   }
@@ -72,15 +77,15 @@ export class MessagesComponent implements OnInit {
     return false;
   }
 
-  getOtherUsername() {
-    if (this.messages[0].receiverUsername === this.ownUsername) {
-      return this.messages[0].senderUsername
+  getOtherUsername() {   
+    if (this.messagesListWithUserData.messagesList.username1 === this.ownUsername) {
+      return this.messagesListWithUserData.messagesList.username2
     }
-    return this.messages[0].receiverUsername
+    return this.messagesListWithUserData.messagesList.username1
   }
 
   getDate(date: Date) {
-    return this.datePipe.transform(date, 'EEEE, HH:ss');
+    return this.datePipe.transform(date, 'EEEE, HH:mm');
   }
 
   getOtherUserPhotoUrl() {
@@ -98,24 +103,28 @@ export class MessagesComponent implements OnInit {
     this.isWritingMessage = !this.isWritingMessage
   }
 
-  sendMessage () {
+  sendMessage() {
     if (!this.messageForm.valid) {
       return;
     }
 
     this.messageService.generateMessageId()
-    .then(result => {
-      let message: Message = {
-        messageId: result?.valueOf(),
-        messagesListId: this.messagesListId,
-        messageText: this.messageForm.get('text')?.value,
-        senderUsername: this.ownUsername,
-        receiverUsername: this.otherUsername,
-        timestamp: Timestamp.now().toDate()
-      }
-      console.log(message);
-      this.messageService.sendMessage(message)
-    })
+      .then(result => {
+        let message: Message = {
+          messageId: result?.valueOf(),
+          messagesListId: this.messagesListId,
+          messageText: this.messageForm.get('text')?.value,
+          senderUsername: this.ownUsername,
+          receiverUsername: this.otherUsername,
+          timestamp: Timestamp.now().toDate()
+        }
+        this.messageService.sendMessage(message)
+      })
+  }
+
+  redirectToPosterProfile(otherUsername: string) {
+    let link = "/profile/" + otherUsername
+    this.router.navigate([link])
   }
 
 }

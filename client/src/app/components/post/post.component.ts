@@ -6,6 +6,7 @@ import { Observable } from 'rxjs';
 import { Router } from '@angular/router';
 import { DatePipe } from '@angular/common';
 import { PostsService } from 'src/app/services/posts.service';
+import { TranslocoLocaleModule } from '@ngneat/transloco-locale';
 
 @Component({
   selector: 'app-post',
@@ -79,8 +80,9 @@ export class PostComponent implements OnInit {
     this.router.navigate([link])
   }
 
-  getDate(date: Date) {
-    return this.datePipe.transform(date, 'MMMM dd, HH:ss');
+  redirectToPosterProfile(posterUsername: string) {  
+    let link = "/profile/" + posterUsername
+    this.router.navigate([link])
   }
 
 }

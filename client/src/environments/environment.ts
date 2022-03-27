@@ -43,7 +43,8 @@ export const urls = {
   getUserUrl: api + 'getUser',
   followOrUnfollowUserUrl: api + 'followOrUnfollowUser',
   getEveryUsernameUrl: api + 'getEveryUsername',
-  getDisplayNameFromUsernameUrl: api + 'getDisplayNameFromUsername'
+  getDisplayNameFromUsernameUrl: api + 'getDisplayNameFromUsername',
+  getMessagesListIdBetweenUsersUrl: api + 'getMessagesListIdBetweenUsers'
 }
 
 

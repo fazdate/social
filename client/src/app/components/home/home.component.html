@@ -10,22 +10,22 @@
         <mat-icon>arrow_back</mat-icon>
     </button>
     <div class="form-container mat-elevation-z5 text-center">
-        <h1>Create a post!</h1>
+        <h1>{{ 'create-post-text' | transloco}}</h1>
         <form [formGroup]="postForm">
             <mat-form-field>
                 <textarea matInput cdkTextareaAutosize cdkAutosizeMinRows="1" cdkAutosizeMaxRows="5"
-                    formControlName="text" placeholder="Text" class="post-text"></textarea>
+                    formControlName="text" placeholder="{{ 'input-placeholder' | transloco}}" class="post-text"></textarea>
             </mat-form-field>
 
             <button mat-raised-button (click)="inputField.click()" color="primary">
-                Upload image
+                {{ 'upload-image-button-text' | transloco}}
             </button>
             <input #inputField type="file" hidden (change)="uploadImage($event)">
             <br>
 
             <button mat-raised-button type="submit" class="margin-top" class="post-button" color="primary"
                 (click)="createPost()">
-                Post
+                {{ 'post-button-text' | transloco}}
             </button>
         </form>
     </div>
