@@ -1,5 +1,5 @@
 <div class="form-container mat-elevation-z5">
-    <h1>{{ 'sign-up-text' | transloco}}</h1>
+    <h1 class="text-center">{{ 'sign-up-text' | transloco}}</h1>
     <form [formGroup]="signUpForm" (ngSubmit)="submit()">
         <mat-form-field>
             <input matInput placeholder="{{ 'username-placeholder' | transloco}}" formControlName="username" />
@@ -52,11 +52,11 @@
         <mat-error *ngIf="signUpForm.errors?.['notSame']">
             {{ 'password-match' | transloco}}
         </mat-error>
+        <div class="center">
+            <button type="submit" mat-raised-button color="primary">{{ 'sign-up-button-text' | transloco}}</button>
+        </div>
         <span class="center margin-top">
             {{ 'already-registered-text' | transloco}}<a class="login-link" routerLink="/login">{{ 'login-button' | transloco}}</a>
         </span>
-        <div class="center margin-top">
-            <button type="submit" mat-raised-button color="primary">{{ 'sign-up-button-text' | transloco}}</button>
-        </div>
     </form>
 </div>

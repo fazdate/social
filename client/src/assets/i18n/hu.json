@@ -6,7 +6,7 @@
     "logout-button-text": "Kijelentkezés",
 
     "create-post-text": "Mi jár a fejedben?",
-    "input-placeholder": "Text",
+    "input-placeholder": "Szöveg",
     "upload-image-button-text": "Kép feltöltése",
     "post-button-text": "Közzététel",
 
@@ -50,7 +50,29 @@
     "posts-text-2": "posztja van",
 
     "likes-text": "lájk",
-    "comments-text": "kommentek",
+    "comments-text": "komment",
 
-    "send-first-message-text": "Küldj egy első üzenetet neki:"
+    "send-first-message-text": "Küldj egy első üzenetet neki:",
+
+    "sign-in-toast-success": "Siker! Most már beléphetsz!",
+    "sign-in-toast-loading": "Regisztráció...",
+
+    "login-toast-success": "Sikeresen bejelentkeztél",
+    "login-toast-loading": "Bejelentkezés...",
+
+    "comment-service-toast-success": "A komment sikeresen feltöltődött",
+    "comment-service-toast-loading": "Komment feltöltése...",
+    "comment-service-toast-error": "Egy hiba történt a komment feltöltése közben",
+
+    "messages-service-toast-success": "Az üzenet elküldve",
+    "messages-service-toast-loading": "Üzenet küldése...",
+    "messages-service-toast-error": "Egy hiba történt az üzenet küldése közben",
+
+    "posts-service-toast-success": "A poszt sikeresen fel lett töltve",
+    "posts-service-toast-loading": "Poszt feltöltése...",
+    "posts-service-toast-error": "Egy hiba történt a poszt feltöltése közben",
+
+    "users-service-toast-success": "A profil sikeresen frissítve lett",
+    "users-service-toast-loading": "Profil frissítése...",
+    "users-service-toast-error": "Egy hiba történt a profil frissítése közben"
 }

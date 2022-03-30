@@ -27,6 +27,9 @@ export class ProfileComponent implements OnInit {
 
   profileForm = new FormGroup({
     displayName: new FormControl(''),
+    email: new FormControl(''),
+    password: new FormControl(''),
+    confirmPassword: new FormControl(''),
   });
 
   constructor(
@@ -50,7 +53,10 @@ export class ProfileComponent implements OnInit {
           this.username = res.username!
 
           this.profileForm.setValue({
-            displayName: res.displayName
+            displayName: res.displayName,
+            email: res.email,
+            password: "",
+            confirmPassword: ""
           })
 
           this.ownUser$.subscribe(userRes => {
@@ -77,14 +83,38 @@ export class ProfileComponent implements OnInit {
     this.imageUploadService.uploadImage(event.target.files[0], `images/profile/${user.username}`)
       .pipe(
         concatMap(
-          async (photoURL) => this.usersService.updateUsersPhoto(user.username as string, photoURL)
+          async (photoURL) => this.usersService.updateUsersPhoto(user.username!, photoURL)
         )
       ).subscribe()
   }
 
+  updateUser(user: ProfileUser) {
+    if (user.displayName != this.profileForm.get('displayName')?.value) {
+      this.updateDisplayName(user)
+    }
+    if (user.email != this.profileForm.get('email')?.value) {
+      this.changeEmail(user)
+    }
+    if ("" != this.profileForm.get('password')?.value) {
+      this.changePassword(user)
+    }
+  }
+
   updateDisplayName(user: ProfileUser) {
     const newName = this.profileForm.get('displayName')?.value;
-    this.usersService.updateDisplayName(user.username as string, newName as string)
+    this.usersService.updateDisplayName(user.username!, newName as string)
+    this.setisChangingProfile()
+  }
+
+  changeEmail(user: ProfileUser) {
+    const newEmail = this.profileForm.get('email')?.value;
+    this.usersService.changeEmail(user.username!, newEmail)
+    this.setisChangingProfile()
+  }
+
+  changePassword(user: ProfileUser) {
+    const newPassword = this.profileForm.get('password')?.value;
+    this.usersService.changePassword(user.username!, newPassword)
     this.setisChangingProfile()
   }
 

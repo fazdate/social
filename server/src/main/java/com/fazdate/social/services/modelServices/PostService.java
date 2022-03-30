@@ -8,9 +8,7 @@ import com.fazdate.social.services.firebaseServices.FirestoreService;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
-import org.springframework.web.server.ResponseStatusException;
 
 import java.util.concurrent.ExecutionException;
 
@@ -45,30 +43,6 @@ public class PostService {
     public void updatePost(Post post) {
         updatePostPrivate(post);
         LOGGER.info("Post with postId: " + post.getPostId() + " was updated!");
-    }
-
-    /**
-     * Deletes a post
-     */
-    public void deletePost(String postId) throws ExecutionException, InterruptedException {
-        Post post = getPost(postId);
-        User user = getUserFromUsername(post.getPosterUsername());
-        int postIndex = getPostIndexFromPostId(user, postId);
-        user.getPosts().remove(postIndex);
-        service.updateDocumentInCollection(Names.USERS, user, user.getUsername());
-        service.deleteDocumentFromCollection(Names.POSTS, postId);
-        LOGGER.info("Post with postId " + postId + " was deleted!");
-    }
-
-    private int getPostIndexFromPostId(User user, String postId) {
-        int i = 0;
-        for (String post : user.getPosts()) {
-            if (post.equals(postId)) {
-                return i;
-            }
-            i++;
-        }
-        throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "This post doesn't exists");
     }
 
     /**

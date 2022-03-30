@@ -36,6 +36,10 @@ export class HomeComponent implements OnInit {
     text: new FormControl('', Validators.required),
   })
 
+  uploadImage(event: any) {
+    this.imageFile = event.target.files[0]
+    this.doesPostHaveImage = true
+  }
 
   createPost() {
     this.postService.generatePostId().then(res => {
@@ -62,11 +66,6 @@ export class HomeComponent implements OnInit {
 
   showHidePostCreater() {
     this.isCreatingPost = !this.isCreatingPost
-  }
-
-  uploadImage(event: any) {
-    this.imageFile = event.target.files[0]
-    this.doesPostHaveImage = true
   }
 
 }

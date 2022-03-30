@@ -2,6 +2,7 @@ import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
 import { HotToastService } from '@ngneat/hot-toast';
+import { TranslocoService } from '@ngneat/transloco';
 import { urls } from 'src/environments/environment';
 import { Message } from '../models/message';
 import { MessagesList } from '../models/messages-list';
@@ -14,6 +15,7 @@ export class MessagesService {
   constructor(
     private http: HttpClient,
     private toast: HotToastService,
+    private transloco: TranslocoService
   ) { }
 
   async getMessage(messageId: string) {
@@ -62,9 +64,9 @@ export class MessagesService {
     this.http.post(urls.sendMessageUrl, message).pipe(
       this.toast.observe(
         {
-          loading: 'Sendig message...',
-          success: 'Message sent',
-          error: 'There was an error while sending message',
+          loading: this.transloco.translate('messages-service-toast-loading'),
+          success: this.transloco.translate('messages-service-toast-success'),
+          error: this.transloco.translate('messages-service-toast-error'),
         })).subscribe()
     await new Promise(resolve => setTimeout(resolve, 500));
     window.location.reload();

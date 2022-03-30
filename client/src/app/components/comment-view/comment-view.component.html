@@ -23,7 +23,7 @@
             <form [formGroup]="commentForm">
                 <mat-form-field class="comment-form-field">
                     <textarea matInput cdkTextareaAutosize cdkAutosizeMinRows="1" cdkAutosizeMaxRows="5"
-                        formControlName="text" placeholder="Text" class="comment-text"></textarea>
+                        formControlName="text" placeholder="{{ 'input-placeholder' | transloco }}" class="comment-text"></textarea>
                 </mat-form-field>
             </form>
             <button class="send-button" mat-fab color="primary" (click)="sendComment()">

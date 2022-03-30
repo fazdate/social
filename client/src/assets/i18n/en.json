@@ -52,6 +52,27 @@
     "likes-text": "likes",
     "comments-text": "comments",
 
-    "send-first-message-text": "Send a first message to"
+    "send-first-message-text": "Send a first message to",
 
+    "sign-in-toast-success": "Congrats! You can sign in now!",
+    "sign-in-toast-loading": "Signing up...",
+
+    "login-toast-success": "Logged in successfully",
+    "login-toast-loading": "Logging in...",
+
+    "comment-service-toast-success": "Comment uploaded successfully",
+    "comment-service-toast-loading": "Uploading comment...",
+    "comment-service-toast-error": "There was an error while uploading comment",
+
+    "messages-service-toast-success": "Message sent",
+    "messages-service-toast-loading": "Sendig message...",
+    "messages-service-toast-error": "There was an error while sending message",
+
+    "posts-service-toast-success": "Post was uploaded successfully",
+    "posts-service-toast-loading": "Uploading post...",
+    "posts-service-toast-error": "There was an error while uploading post",
+
+    "users-service-toast-success": "Profile updated successfully",
+    "users-service-toast-loading": "Updating profile...",
+    "users-service-toast-error": "There was an error while updating profile"
 }

@@ -22,8 +22,8 @@ export class PostUserCommentsService {
     return await this.getPostUserCommentsArray(username, urls.getOwnPostUserCommentsUrl)
   }
 
-  async getFollowedUsersPostUserComments(username: string) {
-    return await this.getPostUserCommentsArray(username, urls.getFollowedUsersPostUserComments)
+  async getOwnAndFollowedUsersPostUserComments(username: string) {
+    return await this.getPostUserCommentsArray(username, urls.getOwnAndFollowedUsersPostUserCommentsUrl)
   }
 
   async getPostUserCommentsArray(username: string, url: string) {
@@ -43,7 +43,7 @@ export class PostUserCommentsService {
 
   async getPostUserComments(postId: string) {
     const httpParams = new HttpParams().set("postId", postId)
-    const result = await this.http.get<PostUserComments>(urls.getPostUserComment, { 'params': httpParams }).toPromise()
+    const result = await this.http.get<PostUserComments>(urls.getPostUserCommentUrl, { 'params': httpParams }).toPromise()
     return {
       comments: result?.comments,
       photoUrl: result?.photoUrl,

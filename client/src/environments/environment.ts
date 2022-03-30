@@ -15,36 +15,39 @@ export const environment = {
   production: false
 };
 
-export const api = 'http://localhost:8080/'
+export const baseUrl = 'http://localhost:8080/'
 
 export const urls = {
-  createUserurl: api + 'createUser',
-  addCommentUrl: api + 'addComment',
-  generateCommentIdUrl: api + 'generateCommentId',
-  getCommentUrl: api + 'getComment',
-  deleteCommentUrl: api + 'deleteComment',
-  getEveryCommentOfPostUrl: api + 'getEveryCommentOfPost',
-  getCommentWithUserData: api + 'getCommentWithUserData',
-  getMessageUrl: api + 'getMessage',
-  getMessagesListUrl: api + 'getMessagesListId',
-  getEveryMessageFromMessagesListUrl: api + 'getEveryMessageFromMessagesList',
-  sendMessageUrl: api + 'sendMessage',
-  generateMessageIdUrl: api + 'generateMessageId',
-  getMessagesListWIthUserDataUrl: api + 'getMessagesListWIthUserData',
-  getUsersEveryMessagesListWithUserDatUrl: api + 'getUsersEveryMessagesListWithUserData',
-  getPostUserCommentsArrayUrl: api + 'getPostUserCommentsArray',
-  getOwnPostUserCommentsUrl: api + 'getOwnPostUserComments',
-  getFollowedUsersPostUserComments: api + 'getFollowedUsersPostUserComments',
-  getPostUserComment: api + 'getPostUserComment',
-  createPostUrl: api + 'createPost',
-  generatePostId: api + 'generatePostId',
-  likeOrUnlikePostUrl: api + 'likeOrUnlikePost',
-  updateUserUrl: api + 'updateUser',
-  getUserUrl: api + 'getUser',
-  followOrUnfollowUserUrl: api + 'followOrUnfollowUser',
-  getEveryUsernameUrl: api + 'getEveryUsername',
-  getDisplayNameFromUsernameUrl: api + 'getDisplayNameFromUsername',
-  getMessagesListIdBetweenUsersUrl: api + 'getMessagesListIdBetweenUsers'
+  createUserUrl: baseUrl + 'createUser',
+  changePasswordUrl: baseUrl + 'changePassword',
+  changeEmailUrl: baseUrl + 'changeEmail',
+  addCommentUrl: baseUrl + 'addComment',
+  generateCommentIdUrl: baseUrl + 'generateCommentId',
+  getCommentUrl: baseUrl + 'getComment',
+  deleteCommentUrl: baseUrl + 'deleteComment',
+  getEveryCommentOfPostUrl: baseUrl + 'getEveryCommentOfPost',
+  getCommentWithUserDataUrl: baseUrl + 'getCommentWithUserData',
+  getMessageUrl: baseUrl + 'getMessage',
+  getMessagesListUrl: baseUrl + 'getMessagesListId',
+  getEveryMessageFromMessagesListUrl: baseUrl + 'getEveryMessageFromMessagesList',
+  sendMessageUrl: baseUrl + 'sendMessage',
+  generateMessageIdUrl: baseUrl + 'generateMessageId',
+  getMessagesListWIthUserDataUrl: baseUrl + 'getMessagesListWIthUserData',
+  getUsersEveryMessagesListWithUserDatUrl: baseUrl + 'getUsersEveryMessagesListWithUserData',
+  getPostUserCommentsArrayUrl: baseUrl + 'getPostUserCommentsArray',
+  getOwnPostUserCommentsUrl: baseUrl + 'getOwnPostUserComments',
+  getFollowedUsersPostUserCommentsUrl: baseUrl + 'getFollowedUsersPostUserComments',
+  getOwnAndFollowedUsersPostUserCommentsUrl: baseUrl + 'getOwnAndFollowedUsersPostUserComments',
+  getPostUserCommentUrl: baseUrl + 'getPostUserComment',
+  createPostUrl: baseUrl + 'createPost',
+  generatePostIdUrl: baseUrl + 'generatePostId',
+  likeOrUnlikePostUrl: baseUrl + 'likeOrUnlikePost',
+  updateUserUrl: baseUrl + 'updateUser',
+  getUserUrl: baseUrl + 'getUser',
+  followOrUnfollowUserUrl: baseUrl + 'followOrUnfollowUser',
+  getEveryUsernameUrl: baseUrl + 'getEveryUsername',
+  getDisplayNameFromUsernameUrl: baseUrl + 'getDisplayNameFromUsername',
+  getMessagesListIdBetweenUsersUrl: baseUrl + 'getMessagesListIdBetweenUsers'
 }
 
 

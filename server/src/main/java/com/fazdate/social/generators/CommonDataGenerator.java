@@ -61,7 +61,7 @@ public class CommonDataGenerator {
     }
 
     /**
-     * Return with a String that contains a random number of words
+     * Returns with a String that contains a random number of words
      *
      * @param min - The minimum of the words
      * @param max - The maximum of the words

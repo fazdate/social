@@ -3,6 +3,16 @@
     margin-right: 10px;
 }
 
+mat-toolbar {
+    position: fixed;
+    top: 0;
+    z-index: 100;
+}
+
+.content {
+    margin-top: 6em;
+}
+
 .mat-menu-item {
     padding: 0;
     text-align: center;

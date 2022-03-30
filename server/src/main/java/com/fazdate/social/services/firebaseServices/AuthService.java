@@ -21,6 +21,20 @@ public class AuthService {
     }
 
     /**
+     * Changes the given user's email address
+     */
+    public void changeEmail(String uid, String newEmail) throws FirebaseAuthException {
+        firebaseAuth.getUser(uid).updateRequest().setEmail(newEmail);
+    }
+
+    /**
+     * Changes the given user's password
+     */
+    public void changePassword(String uid, String newPassword) throws FirebaseAuthException {
+        firebaseAuth.getUser(uid).updateRequest().setEmail(newPassword);
+    }
+
+    /**
      * Returns every registered user
      */
     public ListUsersPage getEveryUser() throws FirebaseAuthException {

@@ -9,10 +9,23 @@
     </div>
     <input #inputField type="file" hidden (change)="uploadImage($event, user)">
 
-    <form class="margin-top" [formGroup]="profileForm" (ngSubmit)="updateDisplayName(user)">
-      <div class="row">
+    <form class="margin-top" [formGroup]="profileForm" (ngSubmit)="updateUser(user)">
+      <div class="column">
         <mat-form-field>
-          <input type="text" matInput formControlName="displayName" placeholder="{{ 'display-name-placeholder' | transloco }}" />
+          <input type="text" matInput formControlName="displayName"
+            placeholder="{{ 'display-name-placeholder' | transloco }}" />
+        </mat-form-field>
+        <mat-form-field>
+          <input type="text" matInput formControlName="email"
+            placeholder="{{ 'email-placeholder' | transloco }}" />
+        </mat-form-field>
+        <mat-form-field>
+          <input type="password" matInput formControlName="password"
+            placeholder="{{ 'password-placeholder' | transloco }}" />
+        </mat-form-field>
+        <mat-form-field>
+          <input type="password" matInput formControlName="confirmPassword"
+            placeholder="{{ 'confirm-password-placeholder' | transloco }}" />
         </mat-form-field>
       </div>
 
@@ -36,26 +49,32 @@
           <h1 class="text-center"><b>{{ user.displayName }}</b></h1>
           <p>{{ 'username-text' | transloco }} <b>{{ user.username}}</b></p>
           <p>{{ 'birthdate-text' | transloco }} <b>{{ user.birthdate }}</b></p>
-          <div class="buttons" *ngIf="!isOwnProfile">
-            <button mat-raised-button color="primary" (click)="follow()" class="follow-button">
-              {{ followButtonText }}
-            </button>
-            <button mat-mini-fab color="primary" (click)="redirectToMessagesList(user.username!)">
-              <mat-icon>email</mat-icon>
+          <div class="buttons">
+            <div *ngIf="!isOwnProfile">
+              <button mat-raised-button color="primary" (click)="follow()" class="follow-button">
+                {{ followButtonText }}
+              </button>
+              <button mat-mini-fab color="primary" (click)="redirectToMessagesList(user.username!)">
+                <mat-icon>email</mat-icon>
+              </button>
+            </div>
+            <button *ngIf="isOwnProfile" mat-mini-fab (click)="setisChangingProfile()" class="edit-button"
+              color="primary">
+              <mat-icon>edit</mat-icon>
             </button>
           </div>
         </div>
       </div>
 
       <div class="profile-details-stats">
-        <p>{{ 'followers-text-1' | transloco }} <b>{{ user.followers!.length }}</b> {{ 'followers-text-2' | transloco }}</p>
-        <p>{{ 'follows-text-1' | transloco }} <b>{{ user.followedUsers!.length }}</b> {{ 'follows-text-2' | transloco }}</p>
+        <p>{{ 'followers-text-1' | transloco }} <b>{{ user.followers!.length }}</b> {{ 'followers-text-2' | transloco }}
+        </p>
+        <p>{{ 'follows-text-1' | transloco }} <b>{{ user.followedUsers!.length }}</b> {{ 'follows-text-2' | transloco }}
+        </p>
         <p>{{ 'posts-text-1' | transloco }} <b>{{ user.posts!.length }}</b> {{ 'posts-text-2' | transloco }} </p>
       </div>
 
-      <button *ngIf="isOwnProfile" mat-mini-fab (click)="setisChangingProfile()" class="edit-button" color="primary">
-        <mat-icon>edit</mat-icon>
-      </button>
+
 
     </div>
 

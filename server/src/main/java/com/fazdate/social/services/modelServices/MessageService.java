@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.concurrent.ExecutionException;
 
 @Service
@@ -48,18 +49,18 @@ public class MessageService {
      * Returns a unique random id for a new messagesList
      */
     public String generateMessagesListId() throws ExecutionException, InterruptedException {
-        return commonDataGenerator.generateId(Names.MESSAGESLIST);
+        return commonDataGenerator.generateId(Names.MESSAGESLISTS);
     }
 
     private void addFirstMessagesToUsers(User user, Message message) throws ExecutionException, InterruptedException {
         MessagesList messagesList = MessagesList.builder()
-                .messagesListId(commonDataGenerator.generateId(Names.MESSAGESLIST))
+                .messagesListId(commonDataGenerator.generateId(Names.MESSAGESLISTS))
                 .username1(message.getSenderUsername())
                 .username2(message.getReceiverUsername())
                 .messageIds(new ArrayList<>(Collections.singleton(message.getMessageId())))
                 .build();
 
-        firestoreService.addDocumentToCollection(Names.MESSAGESLIST, messagesList, messagesList.getMessagesListId());
+        firestoreService.addDocumentToCollection(Names.MESSAGESLISTS, messagesList, messagesList.getMessagesListId());
         firestoreService.addDocumentToCollection(Names.MESSAGES, message, message.getMessageText());
 
         user.getMessagesList().add(messagesList.getMessagesListId());
@@ -92,7 +93,7 @@ public class MessageService {
         user2.getMessagesList().add(messagesList.getMessagesListId());
         updateUserInDatabase(user2);
 
-        firestoreService.addDocumentToCollection(Names.MESSAGESLIST, messagesList, messagesList.getMessagesListId());
+        firestoreService.addDocumentToCollection(Names.MESSAGESLISTS, messagesList, messagesList.getMessagesListId());
     }
 
     /**
@@ -111,6 +112,7 @@ public class MessageService {
         for (String messageId : messagesList.getMessageIds()) {
             messages.add(getMessage(messageId));
         }
+        messages.sort(Comparator.comparing(Message::getTimestamp).reversed());
         return messages.toArray(new Message[messages.size()]);
     }
 
@@ -138,26 +140,10 @@ public class MessageService {
     }
 
     /**
-     * Checks if the given users have talked before
-     */
-    public boolean doesTheseUsersHaveMessages(String username1, String username2) throws ExecutionException, InterruptedException {
-        User user1 = getUserFromDatabase(username1);
-        ArrayList<String> messagesListIds = user1.getMessagesList();
-        for (String id : messagesListIds) {
-            MessagesList messagesList = getMessagesList(id);
-            if ((messagesList.getUsername1().equals(username1) && messagesList.getUsername2().equals(username2))
-                    || (messagesList.getUsername1().equals(username2) && messagesList.getUsername2().equals(username1))) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    /**
      * Returns a messageList from the given id
      */
     public MessagesList getMessagesList(String messagesListId) throws ExecutionException, InterruptedException {
-        return firestoreService.getObjectFromDocument(Names.MESSAGESLIST, MessagesList.class, messagesListId);
+        return firestoreService.getObjectFromDocument(Names.MESSAGESLISTS, MessagesList.class, messagesListId);
     }
 
     private User getUserFromDatabase(String username) throws ExecutionException, InterruptedException {
@@ -169,7 +155,7 @@ public class MessageService {
     }
 
     private void updateMessagesInDatabase(MessagesList messagesList) {
-        firestoreService.updateDocumentInCollection(Names.MESSAGESLIST, messagesList, messagesList.getMessagesListId());
+        firestoreService.updateDocumentInCollection(Names.MESSAGESLISTS, messagesList, messagesList.getMessagesListId());
     }
 
 }

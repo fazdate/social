@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { AbstractControl, FormControl, FormGroup, ValidationErrors, Validators, ValidatorFn } from '@angular/forms';
 import { Router } from '@angular/router';
 import { HotToastService } from '@ngneat/hot-toast';
+import { TranslocoService } from '@ngneat/transloco';
 import { AuthenticationService } from 'src/app/services/authentication.service';
 
 @Component({
@@ -29,7 +30,8 @@ export class SignupComponent implements OnInit {
   constructor(
     private authService: AuthenticationService,
     private toast: HotToastService,
-    private router: Router
+    private router: Router,
+    private transloco: TranslocoService
   ) { }
 
   ngOnInit(): void {
@@ -78,8 +80,8 @@ export class SignupComponent implements OnInit {
       .signUp(this.formdata, this.password?.value)
       .pipe(
         this.toast.observe({
-          success: 'Congrats! You can sign in now!',
-          loading: 'Signing up...',
+          success: this.transloco.translate('sign-in-toast-success'),
+          loading: this.transloco.translate('sign-in-toast-loading'),
           error: ({ message }) => `${message}`,
         })
       )

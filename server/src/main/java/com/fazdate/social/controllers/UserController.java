@@ -50,4 +50,14 @@ public class UserController {
         return userService.getDisplayNameFromUsername(username);
     }
 
+    @PutMapping("/changePassword")
+    public void changePassword(@RequestParam String username, @RequestParam String newPassword) throws FirebaseAuthException {
+        userService.changePassword(username, newPassword);
+    }
+
+    @PutMapping("/changeEmail")
+    public void changeEmail(@RequestParam String username, @RequestParam String newEmail) throws FirebaseAuthException {
+        userService.changeEmail(username, newEmail);
+    }
+
 }

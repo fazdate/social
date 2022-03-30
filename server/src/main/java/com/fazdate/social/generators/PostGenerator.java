@@ -31,7 +31,7 @@ public class PostGenerator {
     }
 
     private String generatePostImage() throws IOException {
-        // If it's less than 10, then the post will have an image, otherwise it will be a text only post
+        // There is a 20% chance, that the post won't have an image
         int doesThePostHaveAnImage = (int) (Math.random() * 5);
         if (doesThePostHaveAnImage > 0) {
             return commonDataGenerator.generatePhotoUrl("src/main/resources/postImages.txt");

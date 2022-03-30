@@ -4,6 +4,7 @@ import { HotToastService } from '@ngneat/hot-toast';
 import { Post } from '../models/post';
 import '@angular/common/locales/hu';
 import { urls } from 'src/environments/environment';
+import { TranslocoService } from '@ngneat/transloco';
 
 @Injectable({
   providedIn: 'root'
@@ -13,6 +14,7 @@ export class PostsService {
   constructor(
     private http: HttpClient,
     private toast: HotToastService,
+    private transloco: TranslocoService
   ) { }
 
 
@@ -20,15 +22,15 @@ export class PostsService {
     this.http.post(urls.createPostUrl, post).pipe(
       this.toast.observe(
         {
-          loading: 'Uploading post...',
-          success: 'Post was uploaded successfully',
-          error: 'There was an error while uploading post',
+          loading: this.transloco.translate('posts-service-toast-loading'),
+          success: this.transloco.translate('posts-service-toast-success'),
+          error: this.transloco.translate('posts-service-toast-error'),
         })).subscribe()
     window.location.reload();
   }
 
   async generatePostId() {
-    const result = await this.http.get<string>(urls.generatePostId).toPromise()
+    const result = await this.http.get<string>(urls.generatePostIdUrl).toPromise()
     let postId = result?.valueOf()
     return postId
   }

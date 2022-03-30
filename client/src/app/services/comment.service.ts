@@ -1,6 +1,7 @@
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { HotToastService } from '@ngneat/hot-toast';
+import { TranslocoService } from '@ngneat/transloco';
 import { urls } from 'src/environments/environment';
 import { Comment } from '../models/comment';
 
@@ -12,16 +13,17 @@ export class CommentService {
 
   constructor(
     private http: HttpClient,
-    private toast: HotToastService
+    private toast: HotToastService,
+    private transloco: TranslocoService
   ) { }
 
   async addComment(comment: Comment) {
     this.http.post(urls.addCommentUrl, comment).pipe(
       this.toast.observe(
         {
-          loading: 'Uploading comment...',
-          success: 'Comment uploaded successfully ',
-          error: 'There was an error while uploading comment',
+          loading: this.transloco.translate('comment-service-toast-loading'),
+          success: this.transloco.translate('comment-service-toast-success'),
+          error: this.transloco.translate('comment-service-toast-error'),
         })).subscribe()
         window.location.reload();
   }

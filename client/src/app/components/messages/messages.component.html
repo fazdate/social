@@ -40,7 +40,7 @@
     <form [formGroup]="messageForm" class="message-writer-form">
         <mat-form-field>
             <textarea matInput cdkTextareaAutosize cdkAutosizeMinRows="1" cdkAutosizeMaxRows="5"
-                formControlName="text" placeholder="Text" class="message-text"></textarea>
+                formControlName="text" placeholder="{{ 'input-placeholder' | transloco }}" class="message-text"></textarea>
         </mat-form-field>
         <button mat-mini-fab type="submit" class="margin-top" class="send-button" color="primary"
             (click)="sendMessage()">

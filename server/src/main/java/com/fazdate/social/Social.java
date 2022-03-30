@@ -10,9 +10,14 @@ import org.springframework.stereotype.Component;
 public class Social implements CommandLineRunner {
     private final DatabaseRecreater databaseRecreater;
 
+    /**
+     * This will delete every user and their data.
+     * Only uncomment it if you need to do that!
+     */
     @Override
-    public void run(String... args) throws Exception {
-        //databaseRecreater.recreateDatabase(10);
+    public void run(String... args) {
+
+        // databaseRecreater.recreateDatabase(10);
     }
 
 }

@@ -46,6 +46,14 @@ public class UserService {
         LOGGER.info(user.getUsername() + " was updated!");
     }
 
+    public void changePassword(String username, String newPassword) throws FirebaseAuthException {
+        authService.changePassword(username, newPassword);
+    }
+
+    public void changeEmail(String username, String newEmail) throws FirebaseAuthException {
+        authService.changeEmail(username, newEmail);
+    }
+
     /**
      * The first user will follow or unfollow the other user, depending on if the user already follows the other.
      *

@@ -14,7 +14,7 @@ export class CommentsWithUserDataService {
 
   async getCommentWithUserData(commentId: string) {
     const httpParams = new HttpParams().set("commentId", commentId)
-    const result = await this.http.get<CommentWithUserData>(urls.getCommentWithUserData, { 'params': httpParams }).toPromise()
+    const result = await this.http.get<CommentWithUserData>(urls.getCommentWithUserDataUrl, { 'params': httpParams }).toPromise()
     return {
       comment: result?.comment,
       photoUrl: result?.photoUrl,

@@ -22,11 +22,6 @@ public class PostController {
         return service.generatePostId();
     }
 
-    @PutMapping("/deletePost")
-    public void deletePost(@RequestParam String postId) throws ExecutionException, InterruptedException {
-        service.deletePost(postId);
-    }
-
     @PutMapping("/likeOrUnlikePost")
     public void likeOrUnlikePost(@RequestParam String postId, @RequestParam String username) throws ExecutionException, InterruptedException {
         service.likeOrUnlikePost(postId, username);

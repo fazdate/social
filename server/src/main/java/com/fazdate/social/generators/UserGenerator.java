@@ -1,6 +1,6 @@
 package com.fazdate.social.generators;
 
-import com.fazdate.social.models.*;
+import com.fazdate.social.models.User;
 import com.fazdate.social.services.firebaseServices.AuthService;
 import com.fazdate.social.services.modelServices.UserService;
 import com.google.firebase.auth.FirebaseAuthException;
@@ -26,10 +26,14 @@ public class UserGenerator {
     /**
      * Generates N number of random users.
      */
-    public List<User> generateNRandomUser(int n) throws FirebaseAuthException, IOException {
+    public List<User> generateNRandomUser(int n) {
         List<User> users = new ArrayList<>();
-        for (int i = 0; i < n; i++) {
-            users.add(generateUser());
+        try {
+            for (int i = 0; i < n; i++) {
+                users.add(generateUser());
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
         }
         return users;
     }
@@ -46,8 +50,8 @@ public class UserGenerator {
                 .birthdate(generateBirthdate())
                 .followers(new ArrayList<>())
                 .followedUsers(new ArrayList<>())
-                .photoURL(generatePhotoUrl())
                 .messagesList(new ArrayList<>())
+                .photoURL(generatePhotoUrl())
                 .build();
         userService.createUser(user, "123456");
         return user;

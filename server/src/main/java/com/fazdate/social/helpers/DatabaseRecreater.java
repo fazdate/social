@@ -31,7 +31,7 @@ public class DatabaseRecreater {
         firestoreService.deleteCollection(Names.USERS);
         firestoreService.deleteCollection(Names.POSTS);
         firestoreService.deleteCollection(Names.COMMENTS);
-        firestoreService.deleteCollection(Names.MESSAGESLIST);
+        firestoreService.deleteCollection(Names.MESSAGESLISTS);
         firestoreService.deleteCollection(Names.MESSAGES);
     }
 

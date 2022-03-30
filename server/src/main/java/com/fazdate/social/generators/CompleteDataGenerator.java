@@ -33,39 +33,49 @@ public class CompleteDataGenerator {
 
     private final static Logger LOGGER = LoggerFactory.getLogger(CompleteDataGenerator.class);
 
+    private List<User> users = new ArrayList<>();
+
     public void generateRandomUsers(int n) {
+        users = userGenerator.generateNRandomUser(n);
+        generateInteractionsBetweenUsers();
+    }
+
+    private void generateInteractionsBetweenUsers() {
         try {
-            List<User> users = userGenerator.generateNRandomUser(n);
             for (User user : users) {
-                user.setFollowers(generateFollowers(user.getUsername()));
+                generateFollowers(user.getUsername());
                 generatePosts(user);
             }
-            generateInteractionsBetweenUsers(users);
+            addInteractionsToPosts();
+            generateMessages();
+            for (User user : users) {
+                updateUser(user);
+            }
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
-    private ArrayList<String> generateFollowers(String username) throws FirebaseAuthException {
-        return generateRandomFollowers(username);
-    }
-
-    private ArrayList<String> generateRandomFollowers(String username) throws FirebaseAuthException {
+    private void generateFollowers(String username) throws FirebaseAuthException {
         ArrayList<String> userIds = userService.getEveryUsername();
         int numberOfFollowers = generateNumberOfFollowers(userIds);
-        ArrayList<String> followers = new ArrayList<>();
+        User user = users.get(getIndexOfUserInList(username));
+
         while (numberOfFollowers != 0) {
             int randomNumber = (int) ((Math.random() * (userIds.size() - 1)) + 1);
-            String potentialFollower = userIds.get(randomNumber);
+            String followerId = userIds.get(randomNumber);
+
             // A user cannot follow themselves
-            if (potentialFollower.equals(username)) {
-                potentialFollower = userIds.get(0);
+            if (followerId.equals(username)) {
+                followerId = userIds.get(0);
             }
-            followers.add(potentialFollower);
-            userIds.remove(potentialFollower);
+
+            User follower = users.get(getIndexOfUserInList(followerId));
+            follower.getFollowedUsers().add(user.getUsername());
+            user.getFollowers().add(followerId);
+            userIds.remove(followerId);
             numberOfFollowers--;
         }
-        return followers;
     }
 
     private int generateNumberOfFollowers(List<String> userIds) {
@@ -74,7 +84,7 @@ public class CompleteDataGenerator {
         return (int) (Math.random() * (max - min)) + min;
     }
 
-    private void generatePosts(User user) throws ExecutionException, InterruptedException, IOException {
+    private void generatePosts(User user) throws IOException, ExecutionException, InterruptedException {
         int numberOfPosts = (int) ((Math.random() * (10 - 1)) + 1);
         ArrayList<String> posts = new ArrayList<>();
         for (int i = 0; i < numberOfPosts; i++) {
@@ -85,50 +95,46 @@ public class CompleteDataGenerator {
         user.setPosts(posts);
     }
 
-    private void generateInteractionsBetweenUsers(List<User> users) throws ExecutionException, InterruptedException {
-        updateFollowers(users);
-        updatePosts(users);
-        generateMessages(users);
-        for (User user : users) {
-            updateUser(user);
-        }
+    private void addInteractionsToPosts() throws ExecutionException, InterruptedException {
+        updateNumberOfLikesOnPost();
+        addCommentsToPosts();
     }
 
-    private void updateFollowers(List<User> users) {
-        for (int i = users.size(); i != 0; i--) {
-            User user1 = users.get(i - 1);
-            for (String follower : user1.getFollowers()) {
-                User user2 = users.get(getIndexOfUserInList(users, follower));
-                List<String> user2FollowedUsers = user2.getFollowedUsers();
-                if (!user2FollowedUsers.contains(user1.getUsername())) {
-                    user2.getFollowedUsers().add(user1.getUsername());
-                }
-                LOGGER.info("User with userId " + follower + " had their followers updated");
-            }
-        }
-    }
-
-    private void updatePosts(List<User> users) throws ExecutionException, InterruptedException {
-        updateNumberOfLikesOnPost(users);
-        addCommentsToPosts(users);
-    }
-
-    private void updateNumberOfLikesOnPost(List<User> users) throws ExecutionException, InterruptedException {
+    private void updateNumberOfLikesOnPost() throws ExecutionException, InterruptedException {
         for (User user : users) {
             for (String postId : user.getPosts()) {
                 Post post = postService.getPost(postId);
-                post.setUsersThatLiked(generateUsersThatLike(user));
+                generateUsersThatLike(user, post);
                 updatePost(post);
             }
         }
     }
 
-    private void addCommentsToPosts(List<User> users) throws ExecutionException, InterruptedException {
+    private void generateUsersThatLike(User user, Post post) {
+        int numberOfUsersThatLike = generateNumberOfLikesAndComments(user);
+        ArrayList<String> followers = new ArrayList<>(user.getFollowers());
+        ArrayList<String> usersThatLike = new ArrayList<>();
+
+        while (numberOfUsersThatLike != 0) {
+            int index = 0;
+            if (numberOfUsersThatLike != 1 || followers.size() != 1) {
+                index = (int) ((Math.random() * (followers.size() - 1)) + 1);
+            }
+            usersThatLike.add(followers.get(index));
+            followers.remove(index);
+            numberOfUsersThatLike--;
+        }
+
+        post.setUsersThatLiked(usersThatLike);
+    }
+
+    private void addCommentsToPosts() throws ExecutionException, InterruptedException {
         for (User user : users) {
             for (String postId : user.getPosts()) {
                 Post post = postService.getPost(postId);
                 int numberOfComments = generateNumberOfLikesAndComments(user);
                 ArrayList<String> followers = user.getFollowers();
+
                 while (numberOfComments != 0) {
                     int randomFollowerIdIndex = (int) (Math.random() * followers.size());
                     Comment comment = commentGenerator.generateComment(followers.get(randomFollowerIdIndex), postId);
@@ -142,36 +148,18 @@ public class CompleteDataGenerator {
         }
     }
 
-
-    private ArrayList<String> generateUsersThatLike(User user) {
-        int numberOfUsersThatLike = generateNumberOfLikesAndComments(user);
-        ArrayList<String> followers = new ArrayList<>(user.getFollowers());
-        ArrayList<String> usersThatLike = new ArrayList<>();
-        while (numberOfUsersThatLike != 0) {
-            int index = 0;
-            if (numberOfUsersThatLike != 1 || followers.size() != 1) {
-                index = (int) ((Math.random() * (followers.size() - 1)) + 1);
-            }
-            usersThatLike.add(followers.get(index));
-            followers.remove(index);
-            numberOfUsersThatLike--;
-        }
-
-        return usersThatLike;
-    }
-
     private int generateNumberOfLikesAndComments(User user) {
         int numberOfFollowers = user.getFollowers().size();
         return numberOfFollowers > 1 ? (int) ((Math.random() * (numberOfFollowers - 1)) + 1) : 0;
     }
 
-    private void generateMessages(List<User> users) throws ExecutionException, InterruptedException {
+    private void generateMessages() throws ExecutionException, InterruptedException {
         for (User user : users) {
-            ArrayList<String> followers = user.getFollowers();
-            for (String followerId : followers) {
-                int index = getIndexOfUserInList(users, followerId);
+            for (String followerId : user.getFollowers()) {
+                int index = getIndexOfUserInList(followerId);
                 User follower = users.get(index);
-                if (!messageService.doesTheseUsersHaveMessages(user.getUsername(), follower.getUsername())) {
+
+                if (!doesTheseUsersHaveMessages(user, follower)) {
                     ArrayList<Message> messages = messageGenerator.generateMessages(user, follower);
                     MessagesList messagesList = messagesListGenerator.generateMessages(user, follower, messages);
                     uploadMessages(messages, messagesList.getMessagesListId());
@@ -184,6 +172,17 @@ public class CompleteDataGenerator {
         }
     }
 
+    private boolean doesTheseUsersHaveMessages(User user1, User user2) throws ExecutionException, InterruptedException {
+        for (String id : user1.getMessagesList()) {
+            MessagesList messagesList = messageService.getMessagesList(id);
+            if ((messagesList.getUsername1().equals(user1.getUsername()) && messagesList.getUsername2().equals(user2.getUsername()))
+                    || (messagesList.getUsername1().equals(user2.getUsername()) && messagesList.getUsername2().equals(user1.getUsername()))) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     private void uploadMessages(ArrayList<Message> messages, String messagesListId) {
         for (Message message : messages) {
             message.setMessagesListId(messagesListId);
@@ -192,7 +191,7 @@ public class CompleteDataGenerator {
     }
 
     private void uploadMessagesList(MessagesList messagesList) {
-        firestoreService.addDocumentToCollection(Names.MESSAGESLIST, messagesList, messagesList.getMessagesListId());
+        firestoreService.addDocumentToCollection(Names.MESSAGESLISTS, messagesList, messagesList.getMessagesListId());
     }
 
     private void updateUser(User user) {
@@ -203,9 +202,9 @@ public class CompleteDataGenerator {
         postService.updatePost(post);
     }
 
-    private int getIndexOfUserInList(List<User> users, String userId) {
+    private int getIndexOfUserInList(String username) {
         for (int i = 0; i < users.size(); i++) {
-            if (users.get(i).getUsername().equals(userId)) {
+            if (users.get(i).getUsername().equals(username)) {
                 return i;
             }
         }

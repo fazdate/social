@@ -22,3 +22,4 @@ public class User {
     private ArrayList<String> followedUsers;
     private ArrayList<String> messagesList;
 }
+

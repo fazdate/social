@@ -6,7 +6,6 @@ import { Observable } from 'rxjs';
 import { Router } from '@angular/router';
 import { DatePipe } from '@angular/common';
 import { PostsService } from 'src/app/services/posts.service';
-import { TranslocoLocaleModule } from '@ngneat/transloco-locale';
 
 @Component({
   selector: 'app-post',
@@ -30,7 +29,6 @@ export class PostComponent implements OnInit {
   constructor(
     private postUserCommentsService: PostUserCommentsService,
     private router: Router,
-    private datePipe: DatePipe,
     private postService: PostsService
   ) { }
 
@@ -48,7 +46,7 @@ export class PostComponent implements OnInit {
         this.username = result.username!
         switch (this.type) {
           case "ownAndFollowedUsersPosts":
-            this.postUserCommentsService.getFollowedUsersPostUserComments(result.username!).then(result => this.posts = result)
+            this.postUserCommentsService.getOwnAndFollowedUsersPostUserComments(result.username!).then(result => this.posts = result)
             break
           case "ownPosts":
             this.postUserCommentsService.getOwnPostUserComments(result.username!).then(result => this.posts = result)
@@ -80,7 +78,7 @@ export class PostComponent implements OnInit {
     this.router.navigate([link])
   }
 
-  redirectToPosterProfile(posterUsername: string) {  
+  redirectToPosterProfile(posterUsername: string) {
     let link = "/profile/" + posterUsername
     this.router.navigate([link])
   }

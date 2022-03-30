@@ -20,7 +20,7 @@ public class MessagesListGenerator {
      */
     public MessagesList generateMessages(User user1, User user2, ArrayList<Message> messages) throws ExecutionException, InterruptedException {
         MessagesList messagesList = MessagesList.builder()
-                .messagesListId(commonDataGenerator.generateId(Names.MESSAGESLIST))
+                .messagesListId(commonDataGenerator.generateId(Names.MESSAGESLISTS))
                 .username1(user1.getUsername())
                 .username2(user2.getUsername())
                 .messageIds(getMessageIds(messages))

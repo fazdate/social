@@ -1,5 +1,5 @@
 <div class="form-container mat-elevation-z5">
-    <h1>{{ 'login-text' | transloco}}</h1>
+    <h1 class="text-center">{{ 'login-text' | transloco}}</h1>
     <form [formGroup]="loginForm" (ngSubmit)="submit()">
         <mat-form-field>
             <input matInput placeholder="{{ 'email-placeholder' | transloco}}" formControlName="email" />
@@ -11,12 +11,12 @@
             </mat-error>
         </mat-form-field>
         <mat-form-field>
-            <input matInput type="password" placeholder="Password" formControlName="password" />
+            <input matInput type="password" placeholder="{{ 'password-placeholder' | transloco}}" formControlName="password" />
             <mat-error *ngIf="password?.errors?.['required']">
                 {{ 'password-required' | transloco}}
             </mat-error>
         </mat-form-field>
-        <div class="center margin-top">
+        <div class="center">
             <button type="submit" mat-raised-button color="primary">{{ 'login-button-text' | transloco}}</button>
         </div>
         <span class="center margin-top">

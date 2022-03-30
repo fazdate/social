@@ -2,6 +2,7 @@ import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { doc, Firestore } from '@angular/fire/firestore';
 import { HotToastService } from '@ngneat/hot-toast';
+import { TranslocoService } from '@ngneat/transloco';
 import { docData } from 'rxfire/firestore';
 import { Observable, of, switchMap } from 'rxjs';
 import { urls } from 'src/environments/environment';
@@ -30,16 +31,17 @@ export class UsersService {
     private firestore: Firestore,
     private authenticationService: AuthenticationService,
     private http: HttpClient,
-    private toast: HotToastService
+    private toast: HotToastService,
+    private transloco: TranslocoService
   ) { }
 
   async updateUser(user: ProfileUser) {
     this.http.post(urls.updateUserUrl, user).pipe(
       this.toast.observe(
         {
-          loading: 'Updating profile...',
-          success: 'Profile updated successfully',
-          error: 'There was an error while updating profile',
+          loading: this.transloco.translate('users-service-toast-loading'),
+          success: this.transloco.translate('users-service-toast-success'),
+          error: this.transloco.translate('users-service-toast-error'),
         })).subscribe()
   }
 
@@ -48,6 +50,17 @@ export class UsersService {
     user.displayName = newDisplayName
     await this.updateUser(user)
   }
+
+  async changeEmail(username: string, newEmail: string) {
+    let httpParams = new HttpParams().set("username", username).append("newEmail", newEmail)
+    this.http.put(urls.changeEmailUrl, null, { 'params': httpParams }).toPromise()
+  }
+
+  async changePassword(username: string, newPassword: string) {
+    let httpParams = new HttpParams().set("username", username).append("newPassword", newPassword)
+    this.http.put(urls.changeEmailUrl, null, { 'params': httpParams }).toPromise()
+  }
+
 
   async updateUsersPhoto(username: string, photoURL: string) {
     let user = await this.getUser(username)

@@ -4,6 +4,6 @@ public enum Names {
     USERS,
     POSTS,
     COMMENTS,
-    MESSAGESLIST,
+    MESSAGESLISTS,
     MESSAGES
 }
